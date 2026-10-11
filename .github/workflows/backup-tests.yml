@@ -1,0 +1,20 @@
+name: Backup and restore checks
+on:
+  pull_request:
+  push:
+    branches:
+      - feature/loy-01-safe-backup-restore
+permissions:
+  contents: read
+jobs:
+  backup-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/backup.test.cjs
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/backup.browser.test.cjs
