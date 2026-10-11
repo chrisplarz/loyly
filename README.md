@@ -35,3 +35,47 @@ Upload **`index.html`** to the root of your GitHub Pages repository, replacing t
 **Profile → Export backup** saves a JSON file. **Import backup** restores it into the browser and, if signed in, schedules a cloud sync. **Export CSV** exports visit intervals. Do not discard backups until you confirm both devices have the correct records.
 
 This is a wellness journal, not a medical device, and does not calculate medical risk reductions.
+
+## Safe backup and restore (LÖY-01)
+
+Import backup first validates the entire JSON file and shows counts of new,
+duplicate, and conflicting visits. Existing v1 JSON exports and older exports
+without a format field remain supported. Duplicate IDs inside one file are
+rejected as ambiguous. Files larger than 20 MB are rejected.
+
+**Safe merge (recommended)** adds new IDs only. Existing entries, conflicting
+local versions, preferences, and deletion tombstones remain intact. Visits
+previously deleted on this device are skipped. **Replace** requires a separate
+confirmation and acknowledgement: it adopts backup visits/preferences, records
+tombstones for removed visits, and intentionally restores backup visits that had
+been deleted. These changes use the existing Supabase sync when connected;
+restoring offline saves locally and syncs later. Live timer drafts are unchanged.
+
+A recovery snapshot is saved locally before each restore. Profile → Download
+recovery snapshot exports the latest pre-restore journal as compatible JSON.
+Older snapshots remain in browser storage under keys starting with
+`loyly-before-restore-v1-archive-`; they are not automatically deleted or
+uploaded to Supabase. Recovery snapshots consume browser storage; if storage is
+full, restoration is refused. Downloaded recovery JSON can be imported and
+explicitly replaced to restore its entries. A merge intentionally keeps newer
+local conflicts, so use replacement when deliberately rolling back.
+
+### Automated checks
+
+No build step or runtime dependency was added. With Node 20 or newer:
+
+```sh
+node tests/backup.test.cjs
+# Browser tests need Playwright and Chromium (development tools only).
+npm install --no-save --package-lock=false playwright@1.56.1
+npx playwright install chromium
+node tests/backup.browser.test.cjs
+```
+
+Set `CHROMIUM_PATH` to use an installed Chromium executable. The browser suite
+covers preview/cancel, safe merge, export/import, explicit replacement,
+tombstones, draft preservation, malformed files, stale previews, sync in flight,
+storage failure rollback, and a 390px mobile viewport. Live Supabase credentials
+are not required; authenticated cross-device sync should also be checked during
+review. No database schema or security-policy changes are required.
+
