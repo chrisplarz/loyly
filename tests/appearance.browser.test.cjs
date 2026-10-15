@@ -13,6 +13,8 @@ async function setup(t,{width=390,media=true,reducedMotion='no-preference',appea
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));t.after(()=>assert.deepEqual(errors,[]));
   await page.clock.install({time:new Date(2026,9,15,12)});
+  // Pause before navigation so assertions cannot consume the intro's duration.
+  await page.clock.pauseAt(new Date(2026,9,15,12,0,1));
   await page.route('**/*',async route=>{
    const url=new URL(route.request().url());
    if(url.pathname==='/')return route.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(root,'index.html'),'utf8')});
