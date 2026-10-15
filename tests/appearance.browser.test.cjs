@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
 const root=path.join(__dirname,'..');
 const profile={name:'Nordic',gender:'',weight:'',goal:3};
 const visit={id:'unchanged',date:'2026-10-01',createdAt:10,notes:'Keep me',intervals:[]};
-// Test-only scene stand-ins exercise playback without introducing production stock imagery.
+// A test-only scene stand-in exercises single-image playback without substituting production imagery.
 const scene='<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path fill="#81988b" d="M0 0h100v100H0z"/></svg>';
 async function setup(t,{width=390,media=true,reducedMotion='no-preference',appearance,day,draft,slow=false}={}){
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});t.after(()=>browser.close());
@@ -16,7 +16,7 @@ async function setup(t,{width=390,media=true,reducedMotion='no-preference',appea
   await page.route('**/*',async route=>{
    const url=new URL(route.request().url());
    if(url.pathname==='/')return route.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(root,'index.html'),'utf8')});
-   if(/welcome-/.test(url.pathname)){
+   if(url.pathname==='/assets/welcome-landscape.webp'){
     if(slow)return; // Simulate an indefinitely pending media request.
     return media?route.fulfill({contentType:'image/svg+xml',body:scene}):route.abort();
    }
@@ -50,8 +50,12 @@ test('welcome lasts three seconds, shows Skip and plays once per local calendar 
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-15');
   await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),1);
   // Playwright's JS clock does not advance the browser's CSS animation timeline.
-  await page.locator('.welcome-scene.second').evaluate(el=>el.getAnimations().forEach(a=>{a.pause();a.currentTime=1500}));
-  assert.ok(Number(await page.locator('.welcome-scene.second').evaluate(el=>getComputedStyle(el).opacity))>0);
+  assert.equal(await page.locator('.welcome-scene').count(),1);
+  assert.match(await page.locator('.welcome-scene').getAttribute('src'),/welcome-landscape\.webp$/);
+  await page.locator('.welcome-wordmark').evaluate(el=>el.getAnimations().forEach(a=>{a.pause();a.currentTime=1500}));
+  assert.ok(Number(await page.locator('.welcome-wordmark').evaluate(el=>getComputedStyle(el).opacity))>0);
+  assert.equal(await page.locator('.welcome-wordmark strong').innerText(),'LÖYLY');
+  assert.equal(await page.locator('.welcome-wordmark p').innerText(),'THE ART OF FEELING WELL.');
   await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.clock.setSystemTime(new Date(2026,9,16,12));await page.evaluate(()=>playWelcome());await page.locator('.welcome-intro').waitFor();
@@ -91,7 +95,8 @@ test('storage failures roll back welcome preference and skip automatic welcome; 
  const page=await setup(t,{draft:{id:'in-progress',intervals:[]}});assert.equal(await page.locator('.welcome-intro').count(),0);
  await page.evaluate(()=>nav('profile'));const before=await stored(page);
  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('blocked')}});
- await page.getByLabel('Show daily welcome intro').uncheck();assert.equal(await page.getByLabel('Show daily welcome intro').isChecked(),true);
+ // Click once: uncheck() retries forever because rollback intentionally restores checked state.
+ await page.getByLabel('Show daily welcome intro').click();assert.equal(await page.getByLabel('Show daily welcome intro').isChecked(),true);
  assert.deepEqual(await stored(page),before);assert.equal(await page.evaluate(()=>draft.id),'in-progress');
  await page.evaluate(()=>{draft=null;playWelcome()});await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),0);
 });
