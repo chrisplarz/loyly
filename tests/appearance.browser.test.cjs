@@ -31,9 +31,9 @@ async function setup(t,{width=390,media=true,reducedMotion='no-preference',appea
  await page.goto('http://loyly.test/',{waitUntil:'domcontentloaded'});return page;
 }
 const stored=page=>page.evaluate(()=>JSON.parse(localStorage.getItem(KEY)));
-test('immediate background selection survives reload, profile save and existing cloud merge',async t=>{
+test('leaf paper replaces saved contours across reload, profile save and cloud merge',async t=>{
  const page=await setup(t,{media:false});await page.evaluate(()=>nav('profile'));
- await page.getByRole('radio',{name:'Botanical Whisper'}).check();
+ assert.equal(await page.getByRole('radio').count(),0);
  assert.equal(await page.locator('body').getAttribute('data-background'),'botanical');
  await page.getByLabel('Show daily welcome intro').uncheck();
  await page.getByRole('button',{name:'Save preferences',exact:true}).click();
@@ -41,7 +41,7 @@ test('immediate background selection survives reload, profile save and existing 
  assert.deepEqual((await stored(page)).profile.appearance,{background:'botanical',dailyIntro:false});
  await page.reload();assert.equal(await page.locator('body').getAttribute('data-background'),'botanical');
  await page.evaluate(()=>{adoptMerged(mergedData({profile:{...db.profile,appearance:{background:'contours',dailyIntro:false}},profileUpdatedAt:Date.now()+1000,visits:db.visits}))});
- assert.equal(await page.locator('body').getAttribute('data-background'),'contours');
+ assert.equal(await page.locator('body').getAttribute('data-background'),'botanical');
  assert.deepEqual((await stored(page)).visits,[visit]);
 });
 test('welcome lasts three seconds, shows Skip and plays once per local calendar day',async t=>{
@@ -87,11 +87,11 @@ test('missing and stalled media fail open without recording a daily view',async 
   await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.evaluate(()=>view),'session');
  }
 });
-test('storage failures roll back appearance and skip automatic welcome; unfinished session is preserved',async t=>{
+test('storage failures roll back welcome preference and skip automatic welcome; unfinished session is preserved',async t=>{
  const page=await setup(t,{draft:{id:'in-progress',intervals:[]}});assert.equal(await page.locator('.welcome-intro').count(),0);
  await page.evaluate(()=>nav('profile'));const before=await stored(page);
  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('blocked')}});
- await page.getByRole('radio',{name:'Botanical Whisper'}).click();assert.equal(await page.locator('body').getAttribute('data-background'),'contours');
+ await page.getByLabel('Show daily welcome intro').uncheck();assert.equal(await page.getByLabel('Show daily welcome intro').isChecked(),true);
  assert.deepEqual(await stored(page),before);assert.equal(await page.evaluate(()=>draft.id),'in-progress');
  await page.evaluate(()=>{draft=null;playWelcome()});await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),0);
 });
@@ -101,6 +101,6 @@ test('mobile and desktop keep content within viewport and hero geometry intact',
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   await page.evaluate(()=>{nav('home');document.getElementById('page-home').getAnimations().forEach(a=>a.finish())});const before=await page.locator('.hero').boundingBox();
   await page.evaluate(()=>{db.profile.appearance={background:'botanical'};applyAppearance()});assert.deepEqual(await page.locator('.hero').boundingBox(),before);
-  if(width===390){await page.screenshot({path:'/tmp/loyly-botanical-mobile.png',fullPage:true});await page.evaluate(()=>{db.profile.appearance={background:'contours'};applyAppearance()});await page.screenshot({path:'/tmp/loyly-contours-mobile.png',fullPage:true});}
+  if(width===390){await page.screenshot({path:'/tmp/loyly-botanical-mobile.png',fullPage:true});}
  }
 });
