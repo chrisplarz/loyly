@@ -21,20 +21,20 @@ body::after{background:url('./assets/botanical.svg') no-repeat right -130px bott
 .hero::after{inset:0;width:auto;height:auto;background:url('./assets/paper.svg'),radial-gradient(ellipse at 80% 100%,#6b8d75,transparent 70%);opacity:.12}
 .welcome-preference{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px;font-size:13px}
 .welcome-preference input{width:22px;height:22px;accent-color:var(--pine);flex-shrink:0}
-.welcome-intro{position:fixed;inset:0;z-index:70;overflow:hidden;background:var(--sand) url('./assets/paper.svg');pointer-events:none;animation:welcome-dissolve 3s linear both}
-.welcome-scene{position:absolute;inset:30% 0 0;width:100%;height:70%;object-fit:cover;animation:welcome-push 3s ease-out both}
+.welcome-intro{position:fixed;inset:0;z-index:70;overflow:hidden;background:var(--sand) url('./assets/paper.svg');pointer-events:none;animation:welcome-dissolve 5s linear both}
+.welcome-scene{position:absolute;inset:30% 0 0;width:100%;height:70%;object-fit:cover;animation:welcome-push 5s ease-out both}
 .welcome-shade{position:absolute;inset:0;background:linear-gradient(var(--sand) 0%,var(--sand) 30%,rgba(246,244,237,.75) 38%,transparent 58%)}
-.welcome-wordmark{position:absolute;left:20px;right:20px;top:20%;text-align:center;color:var(--pine);animation:welcome-wordmark 3s linear both}
+.welcome-wordmark{position:absolute;left:20px;right:20px;top:20%;text-align:center;color:var(--pine);animation:welcome-wordmark 5s linear both}
 .welcome-wordmark strong{font:500 clamp(36px,7vw,64px) Manrope,sans-serif;letter-spacing:.28em;padding-left:.28em}
 .welcome-wordmark p{font-size:10px;letter-spacing:.3em;margin:18px 0}
 .welcome-skip{position:absolute;top:max(20px,env(safe-area-inset-top));right:20px;pointer-events:auto;background:var(--paper);color:var(--pine);border:1px solid var(--line);border-radius:999px;padding:12px 20px;min-height:44px;font-weight:700;font-size:13px}
 .welcome-skip:focus-visible{outline:3px solid var(--pine);outline-offset:3px}
-@keyframes welcome-dissolve{0%{opacity:0}20%,83%{opacity:1}100%{opacity:0}}
+@keyframes welcome-dissolve{0%,85%{opacity:1}100%{opacity:0}}
 @keyframes welcome-push{from{transform:scale(1)}to{transform:scale(1.025)}}
 @keyframes welcome-wordmark{0%,35%{opacity:0}58%,100%{opacity:1}}
 @media(max-width:680px){body::after{background-position:right -320px bottom -100px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page,.toast,.welcome-intro,.welcome-scene,.welcome-wordmark{animation:none}.btn,.progress-fill,.bar-fill{transition:none}.btn:hover{transform:none}.welcome-intro{display:none}}
-.daily-reflection{background:var(--mint);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;color:var(--ink)}
+.daily-reflection{background:var(--paper);padding:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;color:var(--ink)}
 .reflection-header{width:100%;min-height:88px;padding:22px;display:flex;align-items:flex-start;gap:14px;text-align:left;border:0;background:transparent;color:inherit}
 .reflection-header:focus-visible{outline:2px solid var(--pine);outline-offset:-5px;border-radius:var(--radius)}
 .reflection-leaf{color:var(--pine);padding-top:2px;flex-shrink:0}.reflection-heading{display:grid;gap:9px;flex:1;min-width:0}.reflection-label{font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--pine2)}.reflection-title{font:600 clamp(17px,2vw,20px)/1.45 Manrope,sans-serif;letter-spacing:-.025em}.reflection-heading time{font-size:11px;color:#53665b}.reflection-chevron{flex-shrink:0;transition:transform 250ms ease;transform:rotate(90deg)}[aria-expanded="true"] .reflection-chevron{transform:rotate(-90deg)}
@@ -42,7 +42,18 @@ body::after{background:url('./assets/botanical.svg') no-repeat right -130px bott
 @media(max-width:680px){.reflection-header{padding:20px 17px;gap:10px}.reflection-body p{padding:0 17px 22px}.daily-reflection{border-radius:17px}}
 @media(prefers-reduced-motion:reduce){.reflection-body,.reflection-chevron{transition:none}}
 
+/* Match the existing uppercase reflection label across the Home statistics. */
+#page-home .stats .stat-label{text-transform:uppercase;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--pine2)}
+.reflection-hint{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px}.reflection-hint::before{content:'';width:18px;height:1px;background:var(--moss)}
+html.welcome-pending .app,html.welcome-pending .bottom-nav{visibility:hidden}
+.welcome-intro.loading{animation:none;opacity:1}.welcome-intro.loading .welcome-wordmark{animation:none;opacity:1}
 </style>
+<script>
+// Gate the first paint only when a daily intro is eligible. No journal data is changed.
+try{const d=new Date(),day=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const saved=JSON.parse(localStorage.getItem('loyly-journal-v1')||'null'),draft=JSON.parse(localStorage.getItem('loyly-live-v1')||'null');
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&saved?.profile?.appearance?.dailyIntro!==false&&!(draft&&Array.isArray(draft.intervals))&&localStorage.getItem('loyly-welcome-day-v1')!==day&&!document.hidden){document.documentElement.classList.add('welcome-pending');setTimeout(()=>document.documentElement.classList.remove('welcome-pending'),2000)}}catch(e){}
+</script>
 </head>
 <body>
 <div class="app">
@@ -284,8 +295,8 @@ const reflectionProvider={
   return {...DAILY_REFLECTIONS.find(r=>r.id===id),day};
  }
 };
-function reflectionMarkup(){const r=reflectionProvider.getDaily();return `<section class="card daily-reflection" data-day="${r.day}" aria-label="Daily reflection"><button type="button" class="reflection-header" aria-expanded="false" aria-controls="reflection-body" onclick="toggleReflection(this)"><span class="reflection-leaf" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4C9 2 3 7 5 14s14 6 15-10ZM4 21 15 10"/></svg></span><span class="reflection-heading"><span class="reflection-label">TODAY’S REFLECTION</span><span class="reflection-title">${esc(r.headline)}</span><time datetime="${r.day}">${pretty(r.day)}</time></span><span class="reflection-chevron">${icon('chev')}</span></button><div id="reflection-body" class="reflection-body" inert><div><p>${esc(r.body)}</p></div></div></section>`}
-function toggleReflection(button){const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));const body=document.getElementById('reflection-body');body.inert=!open;body.classList.toggle('expanded',open)}
+function reflectionMarkup(){const r=reflectionProvider.getDaily();return `<section class="card daily-reflection" data-day="${r.day}" aria-label="Daily reflection"><button type="button" class="reflection-header" aria-expanded="false" aria-controls="reflection-body" onclick="toggleReflection(this)"><span class="reflection-leaf" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4C9 2 3 7 5 14s14 6 15-10ZM4 21 15 10"/></svg></span><span class="reflection-heading"><span class="reflection-label">TODAY’S REFLECTION</span><span class="reflection-title">${esc(r.headline)}</span><span class="reflection-hint">A moment to pause · Read more</span></span><span class="reflection-chevron">${icon('chev')}</span></button><div id="reflection-body" class="reflection-body" inert><div><p>${esc(r.body)}</p></div></div></section>`}
+function toggleReflection(button){const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));const body=document.getElementById('reflection-body');body.inert=!open;body.classList.toggle('expanded',open);button.querySelector('.reflection-hint').textContent=open?'A moment to pause · Read less':'A moment to pause · Read more'}
 function refreshReflection(){const card=document.querySelector('.daily-reflection');if(view==='home'&&card&&card.dataset.day!==localDate())card.outerHTML=reflectionMarkup()}
 // Refresh only the card at local midnight / on return, without rerendering timers.
 setInterval(refreshReflection,30000);
@@ -478,7 +489,7 @@ const WELCOME_SCENE='./assets/welcome-landscape.webp';
 let welcomeRun=null;
 function appearance(){return normalizeAppearance(db.profile.appearance)}
 function applyAppearance(){document.body.dataset.background=appearance().background;if(!appearance().dailyIntro)closeWelcome()}
-function appearanceMarkup(){const a=appearance();return `<h2>Appearance</h2><h3>Welcome Experience</h3><label class="welcome-preference" for="dailyWelcome">Show daily welcome intro<input type="checkbox" id="dailyWelcome" ${a.dailyIntro?'checked':''} onchange="saveAppearance('dailyIntro',this.checked)"/></label><button class="btn btn-outline" id="previewWelcome" onclick="playWelcome(true)">${icon('play')} Preview introduction</button><p class="input-help" style="margin-top:12px">A quiet, three-second welcome. Skip at any time. Reduced-motion settings are respected.</p>`}
+function appearanceMarkup(){const a=appearance();return `<h2>Appearance</h2><h3>Welcome Experience</h3><label class="welcome-preference" for="dailyWelcome">Show daily welcome intro<input type="checkbox" id="dailyWelcome" ${a.dailyIntro?'checked':''} onchange="saveAppearance('dailyIntro',this.checked)"/></label><button class="btn btn-outline" id="previewWelcome" onclick="playWelcome(true)">${icon('play')} Preview introduction</button><p class="input-help" style="margin-top:12px">A quiet, five-second welcome. Skip at any time. Reduced-motion settings are respected.</p>`}
 function saveAppearance(key,value){
  const previous=db.profile.appearance;
  db.profile.appearance={...appearance(),[key]:value};
@@ -486,6 +497,7 @@ function saveAppearance(key,value){
  applyAppearance();
 }
 function closeWelcome(){
+ document.documentElement.classList.remove('welcome-pending');
  const run=welcomeRun;if(!run)return;
  welcomeRun=null;clearTimeout(run.timer);clearTimeout(run.loadTimer);run.cancelLoad?.(false);
  document.removeEventListener('pointerdown',run.interact,true);document.removeEventListener('keydown',run.key,true);document.removeEventListener('focusin',run.focus,true);
@@ -509,6 +521,10 @@ async function playWelcome(preview=false){
  run.visibility=()=>{if(document.hidden)closeWelcome()};run.motionChange=e=>{if(e.matches)closeWelcome()};
  document.addEventListener('pointerdown',run.interact,true);document.addEventListener('keydown',run.key,true);document.addEventListener('focusin',run.focus,true);
  document.addEventListener('visibilitychange',run.visibility);motion.addEventListener('change',run.motionChange);
+ const el=document.createElement('div');run.element=el;el.className='welcome-intro loading';el.setAttribute('role','region');el.setAttribute('aria-label','Löyly welcome introduction');
+ el.insertAdjacentHTML('beforeend','<div class="welcome-shade" aria-hidden="true"></div><div class="welcome-wordmark" aria-hidden="true"><strong>LÖYLY</strong><p>THE ART OF FEELING WELL.</p></div><button class="welcome-skip" type="button">Skip</button>');
+ el.querySelector('button').onclick=closeWelcome;document.body.append(el);
+ if(preview)el.querySelector('button').focus({preventScroll:true});
  const loaded=await Promise.race([
   new Promise(resolve=>{run.cancelLoad=resolve}),
   new Promise(resolve=>{const img=new Image();run.images.push(img);img.onload=()=>resolve(true);img.onerror=()=>resolve(false);img.src=WELCOME_SCENE}),
@@ -521,16 +537,12 @@ async function playWelcome(preview=false){
   if(localStorage.getItem(WELCOME_DAY_KEY)===day){closeWelcome();return}
   localStorage.setItem(WELCOME_DAY_KEY,day);
  }catch(e){closeWelcome();return}}
- const el=document.createElement('div');run.element=el;el.className='welcome-intro';el.setAttribute('role','region');el.setAttribute('aria-label','Löyly welcome introduction');
  // Keep the complete approved artwork intact; show only the scene below its baked-in lettering.
  // Source coordinates exclude the phone frame, status icons and home indicator.
  const scene=document.createElementNS('http://www.w3.org/2000/svg','svg');
  scene.setAttribute('class','welcome-scene');scene.setAttribute('viewBox','96 500 832 970');scene.setAttribute('preserveAspectRatio','xMidYMid slice');scene.setAttribute('aria-hidden','true');scene.setAttribute('focusable','false');
- const image=document.createElementNS('http://www.w3.org/2000/svg','image');image.setAttribute('href',WELCOME_SCENE);image.setAttribute('width','1024');image.setAttribute('height','1536');scene.append(image);el.append(scene);
- el.insertAdjacentHTML('beforeend','<div class="welcome-shade" aria-hidden="true"></div><div class="welcome-wordmark" aria-hidden="true"><strong>LÖYLY</strong><p>THE ART OF FEELING WELL.</p></div><button class="welcome-skip" type="button">Skip</button>');
- el.querySelector('button').onclick=closeWelcome;document.body.append(el);
- if(preview)el.querySelector('button').focus({preventScroll:true});
- run.timer=setTimeout(closeWelcome,3000);
+ const image=document.createElementNS('http://www.w3.org/2000/svg','image');image.setAttribute('href',WELCOME_SCENE);image.setAttribute('width','1024');image.setAttribute('height','1536');scene.append(image);el.prepend(scene);el.classList.remove('loading');
+ run.timer=setTimeout(closeWelcome,5000);
 }
 window.addEventListener('storage',e=>{if(e.key===WELCOME_DAY_KEY&&e.newValue===localDate()&&!welcomeRun?.preview)closeWelcome()});
 

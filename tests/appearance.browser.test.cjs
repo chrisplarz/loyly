@@ -13,6 +13,8 @@ async function setup(t,{width=390,media=true,reducedMotion='no-preference',appea
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));t.after(()=>assert.deepEqual(errors,[]));
   await page.clock.install({time:new Date(2026,9,15,12)});
+  // Pause before navigation so assertions cannot consume the intro's duration.
+  await page.clock.pauseAt(new Date(2026,9,15,12,0,1));
   await page.route('**/*',async route=>{
    const url=new URL(route.request().url());
    if(url.pathname==='/')return route.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(root,'index.html'),'utf8')});
@@ -44,7 +46,7 @@ test('leaf paper replaces saved contours across reload, profile save and cloud m
  assert.equal(await page.locator('body').getAttribute('data-background'),'botanical');
  assert.deepEqual((await stored(page)).visits,[visit]);
 });
-test('welcome lasts three seconds, shows Skip and plays once per local calendar day',async t=>{
+test('welcome lasts five seconds, shows Skip and plays once per local calendar day',async t=>{
   const page=await setup(t);await page.locator('.welcome-intro').waitFor();
   assert.equal(await page.getByRole('button',{name:'Skip',exact:true}).count(),1);
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-15');
@@ -52,11 +54,12 @@ test('welcome lasts three seconds, shows Skip and plays once per local calendar 
   // Playwright's JS clock does not advance the browser's CSS animation timeline.
   assert.equal(await page.locator('.welcome-scene').count(),1);
   assert.match(await page.locator('.welcome-scene image').getAttribute('href'),/welcome-landscape\.webp$/);
-  await page.locator('.welcome-wordmark').evaluate(el=>el.getAnimations().forEach(a=>{a.pause();a.currentTime=1500}));
+  await page.locator('.welcome-wordmark').evaluate(el=>el.getAnimations().forEach(a=>{a.pause();a.currentTime=3000}));
   assert.ok(Number(await page.locator('.welcome-wordmark').evaluate(el=>getComputedStyle(el).opacity))>0);
   assert.equal(await page.locator('.welcome-wordmark strong').innerText(),'LÖYLY');
   assert.equal(await page.locator('.welcome-wordmark p').innerText(),'THE ART OF FEELING WELL.');
-  await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),0);
+  await page.clock.runFor(3499);assert.equal(await page.locator('.welcome-intro').count(),1);
+  await page.clock.runFor(1);assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.clock.setSystemTime(new Date(2026,9,16,12));await page.evaluate(()=>playWelcome());await page.locator('.welcome-intro').waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-16');
@@ -73,7 +76,7 @@ test('disabled daily intro still allows preview; preview leaves daily tracking u
   const page=await setup(t,{appearance:{background:'contours',dailyIntro:false}});await page.evaluate(()=>nav('profile'));
   await page.getByRole('button',{name:'Preview introduction'}).click();await page.locator('.welcome-intro').waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),null);
-  await page.clock.runFor(3000);assert.equal(await page.locator('.welcome-intro').count(),0);
+  await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'previewWelcome');
 });
 test('reduced motion skips welcome and media movement, including preview and runtime changes',async t=>{
@@ -121,7 +124,19 @@ test('approved production artwork loads and crops cleanly on mobile and desktop'
   await page.locator('.welcome-intro').evaluate(el=>el.getAnimations({subtree:true}).forEach(a=>{a.pause();a.currentTime=2100}));
   await page.screenshot({path:`/tmp/loyly-intro-${width}.png`});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  await page.clock.runFor(3000);assert.equal(await page.locator('.welcome-intro').count(),0);
+  await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
  }
+});
+
+test('first paint is gated and a slow image is covered by an opaque skippable welcome',async t=>{
+ const page=await setup(t,{slow:true});
+ assert.equal(await page.locator('.welcome-intro.loading').count(),1);
+ assert.equal(await page.locator('.welcome-intro').evaluate(el=>getComputedStyle(el).opacity),'1');
+ assert.equal(await page.locator('.welcome-intro').evaluate(el=>{const r=el.getBoundingClientRect();return r.width===innerWidth&&r.height===innerHeight}),true);
+ assert.equal(await page.getByRole('button',{name:'Skip',exact:true}).count(),1);
+ await page.getByRole('button',{name:'Skip',exact:true}).click();
+ assert.equal(await page.locator('.welcome-intro').count(),0);
+ assert.equal(await page.locator('.app').evaluate(el=>getComputedStyle(el).visibility),'visible');
+ assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),null);
 });
