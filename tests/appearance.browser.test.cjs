@@ -47,7 +47,7 @@ test('leaf paper replaces saved contours across reload, profile save and cloud m
  assert.deepEqual((await stored(page)).visits,[visit]);
 });
 test('welcome lasts five seconds, shows Skip and plays once per local calendar day',async t=>{
-  const page=await setup(t);await page.locator('.welcome-intro').waitFor();
+  const page=await setup(t);await page.locator('.welcome-intro:not(.loading)').waitFor();
   assert.equal(await page.getByRole('button',{name:'Skip',exact:true}).count(),1);
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-15');
   await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),1);
@@ -61,20 +61,20 @@ test('welcome lasts five seconds, shows Skip and plays once per local calendar d
   await page.clock.runFor(3499);assert.equal(await page.locator('.welcome-intro').count(),1);
   await page.clock.runFor(1);assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
-  await page.clock.setSystemTime(new Date(2026,9,16,12));await page.evaluate(()=>playWelcome());await page.locator('.welcome-intro').waitFor();
+  await page.clock.setSystemTime(new Date(2026,9,16,12));await page.evaluate(()=>playWelcome());await page.locator('.welcome-intro:not(.loading)').waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-16');
 });
 test('Skip, Escape and immediate access to session dismiss intro without changing journal',async t=>{
-  const page=await setup(t);await page.locator('.welcome-intro').waitFor();
+  const page=await setup(t);await page.locator('.welcome-intro:not(.loading)').waitFor();
   await page.getByRole('button',{name:'Skip',exact:true}).click();assert.equal(await page.locator('.welcome-intro').count(),0);
-  await page.evaluate(()=>playWelcome(true));await page.locator('.welcome-intro').waitFor();await page.keyboard.press('Escape');assert.equal(await page.locator('.welcome-intro').count(),0);
-  await page.evaluate(()=>playWelcome(true));await page.locator('.welcome-intro').waitFor();
+  await page.evaluate(()=>playWelcome(true));await page.locator('.welcome-intro:not(.loading)').waitFor();await page.keyboard.press('Escape');assert.equal(await page.locator('.welcome-intro').count(),0);
+  await page.evaluate(()=>playWelcome(true));await page.locator('.welcome-intro:not(.loading)').waitFor();
   await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>view),'session');
   assert.deepEqual((await stored(page)).visits,[visit]);
 });
 test('disabled daily intro still allows preview; preview leaves daily tracking untouched',async t=>{
   const page=await setup(t,{appearance:{background:'contours',dailyIntro:false}});await page.evaluate(()=>nav('profile'));
-  await page.getByRole('button',{name:'Preview introduction'}).click();await page.locator('.welcome-intro').waitFor();
+  await page.getByRole('button',{name:'Preview introduction'}).click();await page.locator('.welcome-intro:not(.loading)').waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),null);
   await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'previewWelcome');
@@ -84,7 +84,7 @@ test('reduced motion skips welcome and media movement, including preview and run
   await page.evaluate(()=>nav('profile'));await page.getByRole('button',{name:'Preview introduction'}).click();
   await page.getByText('Introduction skipped because Reduce Motion is enabled.').waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),null);
-  await page.emulateMedia({reducedMotion:'no-preference'});await page.getByRole('button',{name:'Preview introduction'}).click();await page.locator('.welcome-intro').waitFor();
+  await page.emulateMedia({reducedMotion:'no-preference'});await page.getByRole('button',{name:'Preview introduction'}).click();await page.locator('.welcome-intro:not(.loading)').waitFor();
   await page.emulateMedia({reducedMotion:'reduce'});await page.locator('.welcome-intro').waitFor({state:'detached'});
 });
 test('missing and stalled media fail open without recording a daily view',async t=>{
@@ -116,7 +116,7 @@ test('mobile and desktop keep content within viewport and hero geometry intact',
 test('approved production artwork loads and crops cleanly on mobile and desktop',async t=>{
  assert.ok(fs.statSync(path.join(root,'assets/welcome-landscape.webp')).size<250000);
  for(const width of [390,1280]){
-  const page=await setup(t,{width,media:'production'});await page.locator('.welcome-intro').waitFor();
+  const page=await setup(t,{width,media:'production'});await page.locator('.welcome-intro:not(.loading)').waitFor();
   assert.equal(await page.locator('.welcome-scene image').count(),1);
   assert.equal(await page.locator('.welcome-scene').getAttribute('viewBox'),'96 500 832 970');
   assert.equal(await page.locator('.welcome-scene').getAttribute('aria-hidden'),'true');

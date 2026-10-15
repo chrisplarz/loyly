@@ -28,7 +28,7 @@ test('mobile preview, cancellation, merge, recovery and offline operation',async
  await upload(page,incoming);await page.getByRole('button',{name:'Safe merge · Recommended',exact:true}).click();
  const result=await stored(page);assert.deepEqual(result.visits.slice(0,2),original.visits);assert.equal(result.visits.length,3);assert.deepEqual(result.profile,profile);
  assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem(RECOVERYKEY)).db),original);
- const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Export backup',exact:true}).click();const download=await downloadPromise;
+ const downloadPromise=page.waitForEvent('download');await page.getByLabel('Data action').selectOption('backup');await page.getByRole('button',{name:'Run action',exact:true}).click();const download=await downloadPromise;
  const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));assert.deepEqual(exported.visits,result.visits);assert.equal(exported.format,'loyly-journal-v1');
  await upload(page,exported);await page.getByRole('button',{name:'Safe merge · Recommended',exact:true}).click();assert.deepEqual(await stored(page),result);
 });
@@ -52,4 +52,18 @@ test('replace requires explicit consent, retains draft and records tombstones',a
  const result=await stored(page);assert.equal(result.visits.length,1);assert.equal(result.visits[0].notes,'changed');assert.equal(result.profile.name,'Imported');
  assert.ok(await page.evaluate(()=>cloudMeta.deleted.a));
  const merged=await page.evaluate(()=>mergedData({visits:[{id:'a',date:'2026-10-01',createdAt:10,intervals:[]}],deleted:{},profileUpdatedAt:0}));assert.equal(merged.visits.some(v=>v.id==='a'),false);assert.equal(merged.visits.some(v=>v.id==='b'),true);assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem(DRAFTKEY)).id),'draft');
+});
+
+test('data action menu waits for Run and preserves import preview safeguards',async t=>{
+ const page=await setup(t),original=await stored(page);let downloads=0;page.on('download',()=>downloads++);
+ await page.getByLabel('Data action').selectOption('csv');assert.equal(downloads,0);assert.deepEqual(await stored(page),original);
+ let event=page.waitForEvent('download');await page.getByRole('button',{name:'Run action',exact:true}).click();let download=await event;
+ assert.match(download.suggestedFilename(),/\.csv$/);assert.match(fs.readFileSync(await download.path(),'utf8'),/Visit date/);
+ await page.getByLabel('Data action').selectOption('import');const chooserEvent=page.waitForEvent('filechooser');
+ await page.getByRole('button',{name:'Run action',exact:true}).click();const chooser=await chooserEvent;
+ await chooser.setFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({profile,visits:[visit('new')]}))});
+ await page.getByRole('dialog').waitFor();assert.deepEqual(await stored(page),original);await page.getByRole('button',{name:'Cancel',exact:true}).click();
+ await page.evaluate(()=>localStorage.setItem(RECOVERYKEY,JSON.stringify({db,meta:cloudMeta,savedAt:new Date().toISOString()})));
+ await page.getByLabel('Data action').selectOption('recovery');event=page.waitForEvent('download');await page.getByRole('button',{name:'Run action',exact:true}).click();download=await event;
+ assert.deepEqual(JSON.parse(fs.readFileSync(await download.path(),'utf8')).visits,original.visits);assert.deepEqual(await stored(page),original);
 });
