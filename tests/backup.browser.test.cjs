@@ -48,7 +48,7 @@ test('replace requires explicit consent, retains draft and records tombstones',a
  await page.getByRole('button',{name:'Replace…',exact:true}).click();
  assert.equal(await page.getByRole('button',{name:'Confirm replace',exact:true}).isDisabled(),true);
  assert.equal((await stored(page)).visits.length,2);
- await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Confirm replace',exact:true}).click();
+ await page.locator('#replaceConsent').check();await page.getByRole('button',{name:'Confirm replace',exact:true}).click();
  const result=await stored(page);assert.equal(result.visits.length,1);assert.equal(result.visits[0].notes,'changed');assert.equal(result.profile.name,'Imported');
  assert.ok(await page.evaluate(()=>cloudMeta.deleted.a));
  const merged=await page.evaluate(()=>mergedData({visits:[{id:'a',date:'2026-10-01',createdAt:10,intervals:[]}],deleted:{},profileUpdatedAt:0}));assert.equal(merged.visits.some(v=>v.id==='a'),false);assert.equal(merged.visits.some(v=>v.id==='b'),true);assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem(DRAFTKEY)).id),'draft');
