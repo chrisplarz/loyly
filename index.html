@@ -21,17 +21,15 @@ body::after{background:url('./assets/botanical.svg') no-repeat right -130px bott
 .hero::after{inset:0;width:auto;height:auto;background:url('./assets/paper.svg'),radial-gradient(ellipse at 80% 100%,#6b8d75,transparent 70%);opacity:.12}
 .welcome-preference{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px;font-size:13px}
 .welcome-preference input{width:22px;height:22px;accent-color:var(--pine);flex-shrink:0}
-.welcome-intro{position:fixed;inset:0;z-index:70;overflow:hidden;background:var(--sand);pointer-events:none;animation:welcome-dissolve 3s linear both}
-.welcome-scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.6);animation:welcome-push 3s ease-out both}
-.welcome-scene.second{opacity:0;animation:welcome-crossfade 3s linear both,welcome-push 3s ease-out both}
-.welcome-shade{position:absolute;inset:0;background:linear-gradient(transparent 20%,rgba(246,244,237,.85) 64%,rgba(246,244,237,.92))}
-.welcome-wordmark{position:absolute;left:20px;right:20px;top:62%;text-align:center;color:var(--pine);animation:welcome-wordmark 3s linear both}
+.welcome-intro{position:fixed;inset:0;z-index:70;overflow:hidden;background:var(--sand) url('./assets/paper.svg');pointer-events:none;animation:welcome-dissolve 3s linear both}
+.welcome-scene{position:absolute;inset:30% 0 0;width:100%;height:70%;object-fit:cover;animation:welcome-push 3s ease-out both}
+.welcome-shade{position:absolute;inset:0;background:linear-gradient(var(--sand) 0%,var(--sand) 30%,rgba(246,244,237,.75) 38%,transparent 58%)}
+.welcome-wordmark{position:absolute;left:20px;right:20px;top:20%;text-align:center;color:var(--pine);animation:welcome-wordmark 3s linear both}
 .welcome-wordmark strong{font:500 clamp(36px,7vw,64px) Manrope,sans-serif;letter-spacing:.28em;padding-left:.28em}
 .welcome-wordmark p{font-size:10px;letter-spacing:.3em;margin:18px 0}
 .welcome-skip{position:absolute;top:max(20px,env(safe-area-inset-top));right:20px;pointer-events:auto;background:var(--paper);color:var(--pine);border:1px solid var(--line);border-radius:999px;padding:12px 20px;min-height:44px;font-weight:700;font-size:13px}
 .welcome-skip:focus-visible{outline:3px solid var(--pine);outline-offset:3px}
 @keyframes welcome-dissolve{0%{opacity:0}20%,83%{opacity:1}100%{opacity:0}}
-@keyframes welcome-crossfade{0%,33.33%{opacity:0}60%,100%{opacity:1}}
 @keyframes welcome-push{from{transform:scale(1)}to{transform:scale(1.025)}}
 @keyframes welcome-wordmark{0%,35%{opacity:0}58%,100%{opacity:1}}
 @media(max-width:680px){body::after{background-position:right -320px bottom -100px}}
@@ -285,8 +283,8 @@ function closeModal(){pendingBackup=null;document.getElementById('modalRoot').in
 
 // Appearance is part of the existing synced profile. Daily playback is device-local.
 const WELCOME_DAY_KEY='loyly-welcome-day-v1';
-// These approved production assets are intentionally absent until supplied. No stock substitutes.
-const WELCOME_SCENES=['./assets/welcome-lake.webp','./assets/welcome-mountain.webp'];
+// One approved image, optimized from assets/landscape-intro.PNG. The SVG viewport crops only its display.
+const WELCOME_SCENE='./assets/welcome-landscape.webp';
 let welcomeRun=null;
 function appearance(){return normalizeAppearance(db.profile.appearance)}
 function applyAppearance(){document.body.dataset.background=appearance().background;if(!appearance().dailyIntro)closeWelcome()}
@@ -323,18 +321,22 @@ async function playWelcome(preview=false){
  document.addEventListener('visibilitychange',run.visibility);motion.addEventListener('change',run.motionChange);
  const loaded=await Promise.race([
   new Promise(resolve=>{run.cancelLoad=resolve}),
-  Promise.all(WELCOME_SCENES.map(src=>new Promise(resolve=>{const img=new Image();run.images.push(img);img.onload=()=>resolve(true);img.onerror=()=>resolve(false);img.src=src}))).then(values=>values.every(Boolean)),
+  new Promise(resolve=>{const img=new Image();run.images.push(img);img.onload=()=>resolve(true);img.onerror=()=>resolve(false);img.src=WELCOME_SCENE}),
   new Promise(resolve=>{run.loadTimer=setTimeout(()=>resolve(false),1200)})
  ]);
  if(welcomeRun!==run)return;clearTimeout(run.loadTimer);
- if(!loaded){closeWelcome();if(preview)toast('Introduction unavailable: the two Nordic landscape images have not loaded.');return}
+ if(!loaded){closeWelcome();if(preview)toast('Introduction unavailable: the landscape image could not load.');return}
  if(!preview){try{
   // Recheck after loading: another tab may have claimed today's welcome.
   if(localStorage.getItem(WELCOME_DAY_KEY)===day){closeWelcome();return}
   localStorage.setItem(WELCOME_DAY_KEY,day);
  }catch(e){closeWelcome();return}}
  const el=document.createElement('div');run.element=el;el.className='welcome-intro';el.setAttribute('role','region');el.setAttribute('aria-label','Löyly welcome introduction');
- run.images.forEach((img,i)=>{img.className='welcome-scene'+(i?' second':'');img.alt='';img.setAttribute('aria-hidden','true');el.append(img)});
+ // Keep the complete approved artwork intact; show only the scene below its baked-in lettering.
+ // Source coordinates exclude the phone frame, status icons and home indicator.
+ const scene=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ scene.setAttribute('class','welcome-scene');scene.setAttribute('viewBox','96 500 832 970');scene.setAttribute('preserveAspectRatio','xMidYMid slice');scene.setAttribute('aria-hidden','true');scene.setAttribute('focusable','false');
+ const image=document.createElementNS('http://www.w3.org/2000/svg','image');image.setAttribute('href',WELCOME_SCENE);image.setAttribute('width','1024');image.setAttribute('height','1536');scene.append(image);el.append(scene);
  el.insertAdjacentHTML('beforeend','<div class="welcome-shade" aria-hidden="true"></div><div class="welcome-wordmark" aria-hidden="true"><strong>LÖYLY</strong><p>THE ART OF FEELING WELL.</p></div><button class="welcome-skip" type="button">Skip</button>');
  el.querySelector('button').onclick=closeWelcome;document.body.append(el);
  if(preview)el.querySelector('button').focus({preventScroll:true});
