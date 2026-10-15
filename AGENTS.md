@@ -6,19 +6,20 @@ Löyly is a mobile-first Nordic spa journal for tracking
 sauna sessions, cold plunges, visits, mood, and wellness trends.
 
 ## Source of Truth
-- GitHub owns production code.
+- ChatGPT Sites is the intended primary live host and editing/publishing surface (after the migration is verified).
+- GitHub retains an archival copy of each approved published release and its version history; GitHub Pages is not the intended everyday live host.
+- Never assume Sites publishes automatically to GitHub; explicitly archive the exact published release.
 - Figma owns approved visual designs.
 - Supabase stores synced user data.
 - ChatGPT helps define features and acceptance criteria.
 
 ## Development Workflow
-1. Review the existing code before making changes.
-2. Use a new feature branch for each enhancement.
-3. Follow approved Figma designs when provided.
-4. Reuse existing components and patterns.
-5. Keep changes focused and reversible.
-6. Test before requesting a merge.
-7. Create a pull request for review.
+1. Edit in ChatGPT Sites; keep changes focused and reversible. Follow approved Figma designs when provided.
+2. Test the Sites preview on desktop and iPhone widths, including visits, timer, journal, exports, authentication and cloud sync.
+3. Publish the approved Sites version to the existing Sites URL; confirm it loads and preserves journal access.
+4. Explicitly export or sync the exact published source into a GitHub feature branch, review differences, then merge a pull request into main as a version archive. Do not assume Sites-to-GitHub automatic synchronization.
+5. Do not deploy GitHub Pages as an additional production step. Keep its previous URL available during migration until the Sites iPhone installation is verified.
+6. Before changing hosting/origin, export JSON backups from every device and verify counts; never clear local browser storage, unregister service workers, or remove old installations before cloud sync and backups are verified.
 
 ## Design Standards
 - Preserve the calm, Nordic visual aesthetic.
