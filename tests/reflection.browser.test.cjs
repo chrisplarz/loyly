@@ -11,11 +11,16 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  await page.clock.install({time:new Date(2026,9,15,12)});
  await page.goto('http://loyly.test/');
  const header=page.locator('.reflection-header');
+ assert.equal(await page.locator('.reflection-heading time').count(),0);
+ assert.equal(await page.locator('.reflection-hint').textContent(),'A moment to pause · Read more');
+ assert.equal(await page.locator('.daily-reflection').evaluate(el=>getComputedStyle(el).backgroundColor),await page.locator('.week-grid').evaluate(el=>getComputedStyle(el.closest('.card')).backgroundColor));
+ assert.deepEqual(await page.locator('#page-home .stats .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(3).fill(['uppercase','rgb(37, 74, 67)']));
  assert.equal(await header.getAttribute('aria-expanded'),'false');
  const headline=await page.locator('.reflection-title').textContent();
  assert.equal(await page.locator('#reflection-body').isVisible(),false);
  await header.focus();await page.keyboard.press('Enter');
  assert.equal(await header.getAttribute('aria-expanded'),'true');
+ assert.equal(await page.locator('.reflection-hint').textContent(),'A moment to pause · Read less');
  assert.equal(await page.locator('#reflection-body').isVisible(),true);
  await page.keyboard.press('Space');assert.equal(await header.getAttribute('aria-expanded'),'false');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
