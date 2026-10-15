@@ -54,5 +54,5 @@ test('appearance preferences round trip while legacy backups remain compatible',
  const payload={profile:{...profile,appearance:{background:'botanical',dailyIntro:false}},visits:[visit('a')]};
  assert.deepEqual(json(parseBackup(JSON.stringify(payload))),payload);
  const normalized=parseBackup(JSON.stringify({profile:{...profile,appearance:{background:'unknown',dailyIntro:'false'}},visits:[]}));
- assert.deepEqual(json(normalized.profile.appearance),{background:'contours',dailyIntro:true});
+ assert.deepEqual(json(normalized.profile.appearance),{background:'botanical',dailyIntro:true});
 });

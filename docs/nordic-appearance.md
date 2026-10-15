@@ -28,3 +28,7 @@ Run `node tests/backup.test.cjs`, `node tests/backup.browser.test.cjs` and `node
 No database changes. No live Supabase writes are needed for tests. Real-device iPhone Safari and final imagery/cropping remain manual acceptance checks. Figma updates needed: both background variants, Profile Appearance controls and welcome sequence. No Figma file was supplied; no design files were changed.
 
 Local validation: 8 backup unit checks, 3 existing backup browser checks and 8 appearance browser checks passed in Chromium. Mobile widths 360/390px and desktop 1280px checked; home screenshots reviewed for both styles. `git diff --check` passed. Font requests were stubbed offline in browser tests, so screenshots use the existing fallback fonts. Real-device Safari and final production intro imagery are not verified.
+
+## October 2026 background update
+
+The published app uses Botanical Whisper on warm ivory with stronger paper grain. The contour style and background selector were retired after user feedback. Existing saved `contours` preferences and imported backups normalize to `botanical`; daily welcome and journal records remain unchanged. No Figma file was updated.
