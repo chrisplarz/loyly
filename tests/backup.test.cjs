@@ -49,3 +49,10 @@ test('replacement advances conflict and preference timestamps',()=>{
  const result=buildBackupRestore(incoming,local,{deleted:{},profileUpdatedAt:900},'replace',100);
  assert.equal(result.db.visits[0].updatedAt,501);assert.equal(result.meta.profileUpdatedAt,901);
 });
+
+test('appearance preferences round trip while legacy backups remain compatible',()=>{
+ const payload={profile:{...profile,appearance:{background:'botanical',dailyIntro:false}},visits:[visit('a')]};
+ assert.deepEqual(json(parseBackup(JSON.stringify(payload))),payload);
+ const normalized=parseBackup(JSON.stringify({profile:{...profile,appearance:{background:'unknown',dailyIntro:'false'}},visits:[]}));
+ assert.deepEqual(json(normalized.profile.appearance),{background:'contours',dailyIntro:true});
+});
