@@ -283,7 +283,7 @@ function closeModal(){pendingBackup=null;document.getElementById('modalRoot').in
 
 // Appearance is part of the existing synced profile. Daily playback is device-local.
 const WELCOME_DAY_KEY='loyly-welcome-day-v1';
-// One approved landscape only. The chat image must be attached as a downloadable file before packaging.
+// One approved image, optimized from assets/landscape-intro.PNG. The SVG viewport crops only its display.
 const WELCOME_SCENE='./assets/welcome-landscape.webp';
 let welcomeRun=null;
 function appearance(){return normalizeAppearance(db.profile.appearance)}
@@ -332,7 +332,11 @@ async function playWelcome(preview=false){
   localStorage.setItem(WELCOME_DAY_KEY,day);
  }catch(e){closeWelcome();return}}
  const el=document.createElement('div');run.element=el;el.className='welcome-intro';el.setAttribute('role','region');el.setAttribute('aria-label','Löyly welcome introduction');
- const img=run.images[0];img.className='welcome-scene';img.alt='';img.setAttribute('aria-hidden','true');el.append(img);
+ // Keep the complete approved artwork intact; show only the scene below its baked-in lettering.
+ // Source coordinates exclude the phone frame, status icons and home indicator.
+ const scene=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ scene.setAttribute('class','welcome-scene');scene.setAttribute('viewBox','96 500 832 970');scene.setAttribute('preserveAspectRatio','xMidYMid slice');scene.setAttribute('aria-hidden','true');scene.setAttribute('focusable','false');
+ const image=document.createElementNS('http://www.w3.org/2000/svg','image');image.setAttribute('href',WELCOME_SCENE);image.setAttribute('width','1024');image.setAttribute('height','1536');scene.append(image);el.append(scene);
  el.insertAdjacentHTML('beforeend','<div class="welcome-shade" aria-hidden="true"></div><div class="welcome-wordmark" aria-hidden="true"><strong>LÖYLY</strong><p>THE ART OF FEELING WELL.</p></div><button class="welcome-skip" type="button">Skip</button>');
  el.querySelector('button').onclick=closeWelcome;document.body.append(el);
  if(preview)el.querySelector('button').focus({preventScroll:true});

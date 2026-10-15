@@ -18,7 +18,7 @@ async function setup(t,{width=390,media=true,reducedMotion='no-preference',appea
    if(url.pathname==='/')return route.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(root,'index.html'),'utf8')});
    if(url.pathname==='/assets/welcome-landscape.webp'){
     if(slow)return; // Simulate an indefinitely pending media request.
-    return media?route.fulfill({contentType:'image/svg+xml',body:scene}):route.abort();
+    return media==='production'?route.fulfill({contentType:'image/webp',body:fs.readFileSync(path.join(root,'assets/welcome-landscape.webp'))}):media?route.fulfill({contentType:'image/svg+xml',body:scene}):route.abort();
    }
    if(url.pathname.startsWith('/assets/')&&fs.existsSync(path.join(root,url.pathname)))return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(path.join(root,url.pathname))});
    return route.abort();
@@ -51,7 +51,7 @@ test('welcome lasts three seconds, shows Skip and plays once per local calendar 
   await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),1);
   // Playwright's JS clock does not advance the browser's CSS animation timeline.
   assert.equal(await page.locator('.welcome-scene').count(),1);
-  assert.match(await page.locator('.welcome-scene').getAttribute('src'),/welcome-landscape\.webp$/);
+  assert.match(await page.locator('.welcome-scene image').getAttribute('href'),/welcome-landscape\.webp$/);
   await page.locator('.welcome-wordmark').evaluate(el=>el.getAnimations().forEach(a=>{a.pause();a.currentTime=1500}));
   assert.ok(Number(await page.locator('.welcome-wordmark').evaluate(el=>getComputedStyle(el).opacity))>0);
   assert.equal(await page.locator('.welcome-wordmark strong').innerText(),'LÖYLY');
@@ -107,5 +107,21 @@ test('mobile and desktop keep content within viewport and hero geometry intact',
   await page.evaluate(()=>{nav('home');document.getElementById('page-home').getAnimations().forEach(a=>a.finish())});const before=await page.locator('.hero').boundingBox();
   await page.evaluate(()=>{db.profile.appearance={background:'botanical'};applyAppearance()});assert.deepEqual(await page.locator('.hero').boundingBox(),before);
   if(width===390){await page.screenshot({path:'/tmp/loyly-botanical-mobile.png',fullPage:true});}
+ }
+});
+
+test('approved production artwork loads and crops cleanly on mobile and desktop',async t=>{
+ assert.ok(fs.statSync(path.join(root,'assets/welcome-landscape.webp')).size<250000);
+ for(const width of [390,1280]){
+  const page=await setup(t,{width,media:'production'});await page.locator('.welcome-intro').waitFor();
+  assert.equal(await page.locator('.welcome-scene image').count(),1);
+  assert.equal(await page.locator('.welcome-scene').getAttribute('viewBox'),'96 500 832 970');
+  assert.equal(await page.locator('.welcome-scene').getAttribute('aria-hidden'),'true');
+  // Inspect the hold phase while retaining the actual artwork and animation geometry.
+  await page.locator('.welcome-intro').evaluate(el=>el.getAnimations({subtree:true}).forEach(a=>{a.pause();a.currentTime=2100}));
+  await page.screenshot({path:`/tmp/loyly-intro-${width}.png`});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.clock.runFor(3000);assert.equal(await page.locator('.welcome-intro').count(),0);
+  await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
  }
 });
