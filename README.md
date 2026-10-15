@@ -79,3 +79,26 @@ storage failure rollback, and a 390px mobile viewport. Live Supabase credentials
 are not required; authenticated cross-device sync should also be checked during
 review. No database schema or security-policy changes are required.
 
+
+## Daily Reflection
+
+Home includes a collapsed Daily Reflection beside the weekly rhythm, below the session controls and key statistics. Its 30 curated messages are bundled in
+`index.html`, so no network, account, or AI API is needed. The header supports
+keyboard activation, announces its expanded state, and respects reduced motion. Weeks start on Sunday across Home and Insights; weekly attendance goals reset with that boundary.
+
+`reflectionProvider.getDaily(date)` is the replacement boundary for a future
+Supabase or AI content source. The current provider uses the browser's local
+calendar date and saves its selection plus cycle history under
+`loyly-daily-reflection-v1`, separately from journal, backup, timer, and cloud data.
+It draws from unused messages, starts a fresh cycle after all 30, and avoids a
+repeat across the cycle boundary. Days without visits do not consume messages.
+The card refreshes after local midnight or on returning to the app without
+rerendering session controls. If storage is blocked or full, the message remains
+stable in memory for that page; reload persistence then depends on browser storage
+being available. Clearing site data resets the rotation.
+
+Run `node tests/reflection.browser.test.cjs` with the same Playwright setup above
+for mobile/desktop interaction, daily rotation, reload persistence, content length,
+storage failure, and timer regression checks. No database changes are required.
+Figma should receive the new collapsed/expanded card states beside weekly rhythm;
+this code change does not update Figma automatically.
