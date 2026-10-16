@@ -37,7 +37,7 @@ test('leaf paper replaces saved contours across reload, profile save and cloud m
  const page=await setup(t,{media:false});await page.evaluate(()=>nav('profile'));
  assert.equal(await page.getByRole('radio').count(),0);
  assert.equal(await page.locator('body').getAttribute('data-background'),'botanical');
- await page.getByLabel('Show daily welcome intro').uncheck();
+ await page.getByLabel('Show welcome on launch').uncheck();
  await page.getByRole('button',{name:'Save preferences',exact:true}).click();
  assert.deepEqual((await stored(page)).visits,[visit]);
  assert.deepEqual((await stored(page)).profile.appearance,{background:'botanical',dailyIntro:false});
@@ -46,23 +46,15 @@ test('leaf paper replaces saved contours across reload, profile save and cloud m
  assert.equal(await page.locator('body').getAttribute('data-background'),'botanical');
  assert.deepEqual((await stored(page)).visits,[visit]);
 });
-test('welcome lasts five seconds, shows Skip and plays once per local calendar day',async t=>{
-  const page=await setup(t);await page.locator('.welcome-intro:not(.loading)').waitFor();
-  assert.equal(await page.getByRole('button',{name:'Skip',exact:true}).count(),1);
-  assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-15');
-  await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),1);
-  // Playwright's JS clock does not advance the browser's CSS animation timeline.
-  assert.equal(await page.locator('.welcome-scene').count(),1);
-  assert.match(await page.locator('.welcome-scene image').getAttribute('href'),/welcome-landscape\.webp$/);
-  await page.locator('.welcome-wordmark').evaluate(el=>el.getAnimations().forEach(a=>{a.pause();a.currentTime=3000}));
-  assert.ok(Number(await page.locator('.welcome-wordmark').evaluate(el=>getComputedStyle(el).opacity))>0);
-  assert.equal(await page.locator('.welcome-wordmark strong').innerText(),'LÖYLY');
-  assert.equal(await page.locator('.welcome-wordmark p').innerText(),'THE ART OF FEELING WELL.');
-  await page.clock.runFor(3499);assert.equal(await page.locator('.welcome-intro').count(),1);
-  await page.clock.runFor(1);assert.equal(await page.locator('.welcome-intro').count(),0);
-  await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
-  await page.clock.setSystemTime(new Date(2026,9,16,12));await page.evaluate(()=>playWelcome());await page.locator('.welcome-intro:not(.loading)').waitFor();
-  assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-16');
+test('welcome lasts five seconds and plays on every launch even on the same day',async t=>{
+ const page=await setup(t,{day:'2026-10-15'});await page.locator('.welcome-intro:not(.loading)').waitFor();
+ assert.equal(await page.locator('.welcome-wordmark strong').textContent(),'Ølo Notes');
+ assert.equal(await page.locator('.welcome-wordmark p').textContent(),'Your Nordic Wellness Journal');
+ await page.clock.runFor(4999);assert.equal(await page.locator('.welcome-intro').count(),1);
+ await page.clock.runFor(1);assert.equal(await page.locator('.welcome-intro').count(),0);
+ await page.reload();await page.locator('.welcome-intro:not(.loading)').waitFor();
+ await page.getByRole('button',{name:'Skip',exact:true}).click();assert.equal(await page.locator('.welcome-intro').count(),0);
+ assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),'2026-10-15');
 });
 test('Skip, Escape and immediate access to session dismiss intro without changing journal',async t=>{
   const page=await setup(t);await page.locator('.welcome-intro:not(.loading)').waitFor();
@@ -94,14 +86,14 @@ test('missing and stalled media fail open without recording a daily view',async 
    await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.evaluate(()=>view),'session');
   }
 });
-test('storage failures roll back welcome preference and skip automatic welcome; unfinished session is preserved',async t=>{
- const page=await setup(t,{draft:{id:'in-progress',intervals:[]}});assert.equal(await page.locator('.welcome-intro').count(),0);
+test('storage failures roll back welcome preference; launch intro preserves unfinished session',async t=>{
+ const page=await setup(t,{draft:{id:'in-progress',intervals:[]}});await page.locator('.welcome-intro:not(.loading)').waitFor();await page.getByRole('button',{name:'Skip',exact:true}).click();
  await page.evaluate(()=>nav('profile'));const before=await stored(page);
  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('blocked')}});
  // Click once: uncheck() retries forever because rollback intentionally restores checked state.
- await page.getByLabel('Show daily welcome intro').click();assert.equal(await page.getByLabel('Show daily welcome intro').isChecked(),true);
+ await page.getByLabel('Show welcome on launch').click();assert.equal(await page.getByLabel('Show welcome on launch').isChecked(),true);
  assert.deepEqual(await stored(page),before);assert.equal(await page.evaluate(()=>draft.id),'in-progress');
- await page.evaluate(()=>{draft=null;playWelcome()});await page.clock.runFor(1500);assert.equal(await page.locator('.welcome-intro').count(),0);
+ await page.evaluate(()=>{draft=null;playWelcome()});await page.locator('.welcome-intro:not(.loading)').waitFor();assert.equal(await page.locator('.welcome-intro').count(),1);
 });
 test('mobile and desktop keep content within viewport and hero geometry intact',async t=>{
  for(const width of [360,390,1280]){
@@ -125,7 +117,7 @@ test('approved production artwork loads and crops cleanly on mobile and desktop'
   await page.screenshot({path:`/tmp/loyly-intro-${width}.png`});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);
-  await page.reload();assert.equal(await page.locator('.welcome-intro').count(),0);
+  await page.reload();await page.locator('.welcome-intro:not(.loading)').waitFor();await page.getByRole('button',{name:'Skip',exact:true}).click();
  }
 });
 
@@ -139,4 +131,10 @@ test('first paint is gated and a slow image is covered by an opaque skippable we
  assert.equal(await page.locator('.welcome-intro').count(),0);
  assert.equal(await page.locator('.app').evaluate(el=>getComputedStyle(el).visibility),'visible');
  assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),null);
+});
+
+test('returning to the app replays welcome without interrupting an active timer',async t=>{
+ const page=await setup(t);await page.locator('.welcome-intro:not(.loading)').waitFor();await page.getByRole('button',{name:'Skip',exact:true}).click();
+ await page.evaluate(()=>{beginLive();startInterval('sauna');Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'))});
+ await page.locator('.welcome-intro:not(.loading)').waitFor();await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>view),'session');assert.equal(await page.evaluate(()=>draft.current.running),true);assert.ok(await page.evaluate(()=>currentElapsed())>=5000);
 });

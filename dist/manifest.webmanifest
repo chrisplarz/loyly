@@ -1,6 +1,6 @@
 {
-  "name": "LÖYLY — Nordic Wellness Journal",
-  "short_name": "LÖYLY",
+  "name": "Ølo Notes — Your Nordic Wellness Journal",
+  "short_name": "Ølo Notes",
   "description": "Track sauna, cold plunge, and how you feel, one visit at a time.",
   "start_url": "./index.html",
   "scope": "./",

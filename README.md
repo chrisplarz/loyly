@@ -102,3 +102,14 @@ for mobile/desktop interaction, daily rotation, reload persistence, content leng
 storage failure, and timer regression checks. No database changes are required.
 Figma should receive the new collapsed/expanded card states beside weekly rhythm;
 this code change does not update Figma automatically.
+
+
+## Ølo Notes — branding, launch welcome and weather
+
+The visible name is Ølo Notes, with the tagline Your Nordic Wellness Journal. Browser and installable-app names follow the new brand. Existing journal, cloud, timer, backup and recovery keys remain unchanged for compatibility.
+
+The five-second welcome plays on page launch and returning from the background, without resetting running timers or daily thought rotation. The existing preference still controls playback; reduced motion, Skip and media failure remain supported. The former once-a-day marker is ignored.
+
+The header weather control opens a city picker. City search uses Open-Meteo geocoding; current temperature, weather code and day/night state use its forecast API. Only the selected city is stored on this device under `olo-weather-location-v1`; it is separate from journal data and cloud sync. No automatic geolocation is requested. Refreshes are limited to roughly every 15 minutes, and current data older than 30 minutes is marked unavailable. Missing location and network failures do not invent weather readings. The weather dialog links to Open-Meteo attribution and supports changing/removing the city.
+
+Weather integration: https://open-meteo.com/en/docs and https://open-meteo.com/en/docs/geocoding-api. Run `node tests/weather.browser.test.cjs` for mocked condition mapping, city selection, persistence and network-failure checks. Physical iPhone Safari remains unverified.
