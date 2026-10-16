@@ -20,3 +20,5 @@ jobs:
       - run: node tests/backup.browser.test.cjs
       - run: node tests/appearance.browser.test.cjs
       - run: node tests/reflection.browser.test.cjs
+      - run: node tests/cycles.browser.test.cjs
+      - run: node tests/weather.browser.test.cjs
