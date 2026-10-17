@@ -1,0 +1,39 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const script=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('const KEY='));
+function boot(seed=new Map()){
+ const storage=new Map(seed),nodes=new Map();let fail=false,n=0;
+ const el=id=>{if(id==='weatherControl')return null;if(!nodes.has(id))nodes.set(id,{id,innerHTML:'',textContent:'',value:'',hidden:true,dataset:{},style:{setProperty(){}},classList:{toggle(){},add(){},remove(){}},setAttribute(){},focus(){},showModal(){this.open=true},close(){this.open=false},querySelectorAll:()=>[]});return nodes.get(id)};
+ const context=vm.createContext({Date,Math,JSON,Map,Set,Object,Number,String,Array,Boolean,Error,structuredClone,crypto:{randomUUID:()=>`intent-${++n}`},localStorage:{getItem:k=>storage.get(k)||null,setItem(k,v){if(fail&&k==='loyly-journal-v1')throw Error('quota');storage.set(k,v)},removeItem:k=>storage.delete(k)},document:{body:{dataset:{}},activeElement:null,getElementById:el,querySelectorAll:selector=>selector==='.page'?['home','journal','insights','profile'].map(p=>el('page-'+p)):[],querySelector:()=>null,addEventListener(){},removeEventListener(){},documentElement:{classList:{add(){},remove(){}}}},window:{addEventListener(){},scrollTo(){}},navigator:{onLine:false},setTimeout:()=>1,clearTimeout(){},setInterval:()=>1,confirm:()=>true,console});
+ vm.runInContext(script.slice(0,script.lastIndexOf("navRender();nav('home');"))+"navRender();nav('home');",context);
+ const run=s=>vm.runInContext(s,context);
+ return {run,storage,el,ctx:context,setFail:v=>fail=v,save(text,target='pending'){run(`intentionEditor={target:${JSON.stringify(target)},visitId:draft?.id,initial:${target==='active'?'draft.intention':'db.pendingIntention'}||'',text:${JSON.stringify(text)},saving:false};saveIntention()`);}};
+}
+test('pending text persists across reload, updates once, removes, and never starts a timer',()=>{
+ const h=boot();h.save('  Make space to slow down.  ');assert.equal(h.run('db.pendingIntention'),'Make space to slow down.');assert.equal(h.run('draft'),null);assert.equal(h.run('db.visits.length'),0);
+ const r=boot(h.storage);assert.equal(r.run('db.pendingIntention'),'Make space to slow down.');r.save('Rest deeply.');assert.equal(r.run('db.pendingIntention'),'Rest deeply.');r.run("intentionEditor={target:'pending',initial:db.pendingIntention,text:db.pendingIntention,saving:false};saveIntention(true)");assert.equal(r.run('db.pendingIntention'),undefined);
+});
+test('cancel and failed save preserve committed data and keep retry text',()=>{
+ const h=boot();h.save('Original');h.run("openIntention();updateIntentionInput('Unsaved');requestIntentionDismiss()");assert.equal(h.el('intentionDiscard').hidden,false);assert.equal(h.run('db.pendingIntention'),'Original');h.ctx.keepIntentionEditing();assert.equal(h.run('intentionEditor.text'),'Unsaved');h.ctx.closeIntention();assert.equal(h.run('db.pendingIntention'),'Original');
+ h.setFail(true);h.save('Retry me');assert.equal(h.run('db.pendingIntention'),'Original');assert.equal(h.run('intentionEditor.text'),'Retry me');assert.equal(h.el('intentionError').hidden,false);h.setFail(false);h.ctx.saveIntention();assert.equal(h.run('db.pendingIntention'),'Retry me');
+});
+test('first timer interval atomically consumes pending exactly once; failed creation preserves it',()=>{
+ const h=boot();h.save('Be here');h.ctx.beginLive();assert.equal(h.run('draft'),null);h.setFail(true);h.ctx.startInterval('sauna');assert.equal(h.run('draft'),null);assert.equal(h.run('db.pendingIntention'),'Be here');
+ h.setFail(false);h.ctx.startInterval('sauna');const id=h.run('draft.id');assert.equal(h.run('draft.intention'),'Be here');assert.equal(h.run('db.pendingIntention'),undefined);const r=boot(h.storage);assert.equal(r.run('draft.id'),id);assert.equal(r.run('draft.intention'),'Be here');r.ctx.startInterval('cold');assert.equal(r.run('draft.id'),id);assert.equal(r.run('db.pendingIntention'),undefined);
+});
+test('active intention edits and optional reflection belong to the saved visit; failed finish retains draft',()=>{
+ const h=boot();h.ctx.beginLive();h.ctx.startInterval('sauna');h.save('Recover','active');h.run('draft.current.startedAt=Date.now()-60000');h.ctx.finishLive();h.ctx.setIntentionResponse('live','Somewhat');h.ctx.setIntentionResponse('live','Somewhat');assert.equal(h.run('draft.intentionResponse'),null);h.ctx.setIntentionResponse('live','Yes');h.el('reflectBefore').value='3';h.el('reflectAfter').value='4';h.el('reflectNotes').value='Quiet time';h.setFail(true);h.ctx.saveLiveVisit();assert.equal(h.run('db.visits.length'),0);assert.equal(h.run('draft.intention'),'Recover');h.setFail(false);h.ctx.saveLiveVisit();h.ctx.saveLiveVisit();assert.equal(h.run('db.visits.length'),1);assert.equal(h.run('draft'),null);assert.equal(h.run('db.visits[0].intentionResponse'),'Yes');assert.equal(h.run('db.visits[0].notes'),'Quiet time');
+ const vid=h.run('db.visits[0].id');h.ctx.deleteVisit(vid);assert.equal(h.run('db.pendingIntention'),undefined);
+});
+test('backdated entry and edits never consume pending and do not change other visit intentions',()=>{
+ const h=boot();h.save('For next time');h.ctx.beginManual();h.el('manualDate').value='2026-10-01';h.el('manualHeat').value='10';h.ctx.saveManual();assert.equal(h.run('db.pendingIntention'),'For next time');assert.equal(h.run('db.visits[0].intention'),null);const first=h.run('db.visits[0].id');h.ctx.editVisit(first);h.ctx.updateManualIntention('Historical rest');h.ctx.setIntentionResponse('manual','Not today');h.ctx.saveManual();assert.equal(h.run('db.visits[0].intention'),'Historical rest');assert.equal(h.run('db.visits[0].intentionResponse'),'Not today');assert.equal(h.run('db.pendingIntention'),'For next time');
+ h.ctx.beginLive();h.ctx.startInterval('rest');h.save('Active rest','active');assert.equal(h.run('db.visits[0].intention'),'Historical rest');
+});
+test('legacy draft migrates safely and cloud adoption retains pending and active intentions',()=>{
+ const seed=new Map([['loyly-journal-v1',JSON.stringify({profile:{goal:3},visits:[],pendingIntention:'Future'})],['loyly-live-v1',JSON.stringify({id:'old-draft',intervals:[],current:null,intention:'Legacy'})]]);const h=boot(seed);assert.equal(h.run('draft.id'),'old-draft');h.ctx.persistDraft();assert.equal(h.storage.has('loyly-live-v1'),false);h.run('adoptMerged({profile:{goal:4},visits:[],deleted:{},profileUpdatedAt:2})');const r=boot(h.storage);assert.equal(r.run('draft.intention'),'Legacy');assert.equal(r.run('db.pendingIntention'),'Future');
+});
+test('backups round trip intentions, validate fields, preserve active draft, and merge keeps local pending',()=>{
+ const h=boot();h.save('Local pending');h.run("db.visits=[{id:'v',date:'2026-10-01',intervals:[],intention:'Rest',intentionResponse:'Somewhat'}];persist()");const parsed=h.run('parseBackup(JSON.stringify(db))');assert.equal(parsed.pendingIntention,'Local pending');assert.equal(parsed.visits[0].intentionResponse,'Somewhat');h.run("var incoming=parseBackup(JSON.stringify({profile:{goal:3},visits:[],pendingIntention:'Imported'}));var merged=buildBackupRestore(incoming,db,cloudMeta,'merge')");assert.equal(h.run('merged.db.pendingIntention'),'Local pending');assert.throws(()=>h.run("parseBackup(JSON.stringify({profile:{},visits:[],pendingIntention:'x'.repeat(201)}))"));assert.throws(()=>h.run("parseBackup(JSON.stringify({profile:{},visits:[{id:'x',date:'2026-10-01',intervals:[],intentionResponse:'Yes'}]}))"));
+ h.run("delete incoming.pendingIntention; var replaced=buildBackupRestore(incoming,db,cloudMeta,'replace')");assert.equal(h.run('replaced.db.pendingIntention'),undefined);
+});

@@ -17,7 +17,7 @@ for(const width of [390,1280])test('home and Visits refinements at '+width+'px',
  await page.getByRole('button',{name:'See all visits',exact:true}).click();assert.equal(await page.locator('#visitsCollection .visit-item').count(),8);
  await page.getByRole('button',{name:'Show recent visits',exact:true}).click();assert.equal(await page.locator('#visitsCollection .visit-item').count(),5);
  assert.equal(await page.locator('#sessionArea .session-info').count(),0);
- const panel=await page.locator('.timer-panel').boundingBox(),info=await page.getByRole('button',{name:'Timer information'}).boundingBox();assert.ok(info.x<panel.x+65&&info.y<panel.y+65);
+ const panel=await page.locator('.timer-panel').boundingBox(),info=await page.getByRole('button',{name:'Timer information'}).boundingBox();assert.ok(info.x>panel.x+panel.width-65&&info.y<panel.y+65);
  await page.getByRole('button',{name:'Timer information'}).click();assert.equal(await page.locator('#timerInfoDialog').evaluate(e=>e.open),true);
  const paragraphs=await page.locator('#timerInfoDialog .session-info p').allTextContents();assert.match(paragraphs[0],/^A phone may overheat/);assert.match(paragraphs[1],/^Your timer uses timestamps/);
  await page.keyboard.press('Escape');assert.equal(await page.locator('#timerInfoDialog').evaluate(e=>e.open),false);
