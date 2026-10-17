@@ -1,0 +1,17 @@
+# Intentions
+
+The Home hero's secondary action is Set Intention. It opens a native dialog, styled as a bottom sheet below 600px. Save requires only trimmed text, limited to 200 characters. Optional suggestions fill an editable sentence. Dirty dismissal offers Keep editing or Discard; save failure leaves text open with Retry save. Pending intentions appear in a compact card beneath the hero, with Edit and a separate Start visit action. An active visit's own intention appears above the timer and on Home. The timer controls remain available.
+
+Opening the timer does not create a draft. Starting the first interval atomically creates the draft, copies pending intention text and clears the pending slot. Journal, active draft and synchronization metadata now commit through one localStorage KEY write. An existing DRAFTKEY draft is read until the first successful commit, then safely migrated; compatibility metadata mirrors are best effort. A failed commit restores the last committed in-memory journal/draft. Completing a visit commits the saved visit and clears its draft together. Deleting or discarding a visit does not requeue its intention.
+
+Optional fields are pendingIntention on the journal, intention on the draft/visit, and intentionResponse on the draft/visit (Yes, Somewhat, Not today, or null). Pending and active slots remain device-local and survive cloud adoption. Saved visit fields follow existing visit synchronization. No authentication, backend, database or policy changes are introduced.
+
+Reflection appears in the existing end-of-visit flow and is optional and deselectable. Existing visit notes provide the written reflection. Visit history/detail shows intention text and detail shows any response. Both can be edited through the historical visit editor. Historical creation never consumes a pending intention. Removing or changing an intention clears the previous response.
+
+JSON backups include the pending intention and saved visit fields; CSV adds intention/response columns. Share with ChatGPT includes these private text fields only through the existing notes opt-in. Legacy backups remain supported. Safe merge keeps the current pending intention, importing the backup pending value only when none is set. Replacement uses the backup pending slot, while preserving the current unfinished draft. Backup preview explains these choices.
+
+Accessibility: labelled native dialog, contained focus, Escape and backdrop dismissal with dirty protection, focus return, visible focus rings, 44px suggestion/action targets, labelled textarea, character count and inline alert. The mobile sheet uses visual viewport measurements and a scrollable body with a nonshrinking action footer. Actual iOS keyboard behavior still merits device testing.
+
+Verification: tests/intentions.test.cjs exercises refresh, editing/removal, cancel, retry, atomic failed/successful creation, exact-once transfer, active edits, optional reflection, failed final save, deletion, backdated isolation, legacy migration, cloud adoption, and backup validation/merge/replace. tests/intentions.browser.test.cjs covers the dialog, focus, dirty dismissal, short viewport actions, persistence/retry, active editing, reflection and removal at 390px and 1280px. Existing backup, visits, sharing, appearance, weather, cycles and thought-topic regressions remain in the workflow.
+
+Figma follow-up: hero action label, compact cards, dialog/mobile sheet, optional reflection controls. No Figma files were changed.
