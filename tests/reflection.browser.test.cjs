@@ -32,7 +32,7 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  await page.reload();assert.equal(await page.locator('.reflection-title').textContent(),headline);
  const original=await page.evaluate(()=>localStorage.getItem(KEY));
  const rotation=await page.evaluate(()=>{
- localStorage.removeItem(REFLECTION_KEY);reflectionMemory=null;const results=[];for(let i=0;i<60;i++){const date=new Date(2026,10,1+i);const a=reflectionProvider.getDaily(date),b=reflectionProvider.getDaily(date);if(a.id!==b.id)throw Error('unstable day');results.push(a.id)}return results;
+ db.profile.thoughtTopic='ai';localStorage.removeItem(reflectionStorageKey());reflectionMemory=null;const results=[];for(let i=0;i<60;i++){const date=new Date(2026,10,1+i);const a=reflectionProvider.getDaily(date),b=reflectionProvider.getDaily(date);if(a.id!==b.id)throw Error('unstable day');results.push(a.id)}return results;
  });
  assert.equal(new Set(rotation.slice(0,30)).size,30);assert.equal(new Set(rotation.slice(30)).size,30);assert.notEqual(rotation[29],rotation[30]);
  assert.equal(await page.evaluate(()=>localStorage.getItem(KEY)),original);
@@ -53,7 +53,7 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  await page.reload();assert.equal(await page.evaluate(()=>draft.current.running),false);assert.equal(await page.evaluate(()=>currentElapsed()),elapsed);
  await page.evaluate(()=>{nav('home');refreshReflection()});
  assert.equal(await page.locator('.daily-reflection').getAttribute('data-day'),await page.evaluate(()=>localDate()));
- await page.evaluate(()=>{localStorage.setItem(REFLECTION_KEY,'{');reflectionProvider.getDaily()});
+ await page.evaluate(()=>{localStorage.setItem(reflectionStorageKey(),'{');reflectionProvider.getDaily()});
  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('quota')};reflectionMemory=null;reflectionProvider.getDaily(new Date(2030,0,1))});
  assert.deepEqual(errors,[]);
 });
