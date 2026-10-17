@@ -61,7 +61,7 @@ test('Skip, Escape and immediate access to session dismiss intro without changin
   await page.getByRole('button',{name:'Skip',exact:true}).click();assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.evaluate(()=>playWelcome(true));await page.locator('.welcome-intro:not(.loading)').waitFor();await page.keyboard.press('Escape');assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.evaluate(()=>playWelcome(true));await page.locator('.welcome-intro:not(.loading)').waitFor();
-  await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>view),'session');
+  await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>view),'journal');
   assert.deepEqual((await stored(page)).visits,[visit]);
 });
 test('disabled daily intro still allows preview; preview leaves daily tracking untouched',async t=>{
@@ -83,7 +83,7 @@ test('missing and stalled media fail open without recording a daily view',async 
   for(const options of [{media:false},{slow:true}]){
    const page=await setup(t,options);await page.clock.runFor(1300);
    assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>localStorage.getItem(WELCOME_DAY_KEY)),null);
-   await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.evaluate(()=>view),'session');
+   await page.getByRole('button',{name:/Start session/}).click();assert.equal(await page.evaluate(()=>view),'journal');
   }
 });
 test('storage failures roll back welcome preference; launch intro preserves unfinished session',async t=>{
@@ -136,5 +136,5 @@ test('first paint is gated and a slow image is covered by an opaque skippable we
 test('returning to the app replays welcome without interrupting an active timer',async t=>{
  const page=await setup(t);await page.locator('.welcome-intro:not(.loading)').waitFor();await page.getByRole('button',{name:'Skip',exact:true}).click();
  await page.evaluate(()=>{beginLive();startInterval('sauna');Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'))});
- await page.locator('.welcome-intro:not(.loading)').waitFor();await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>view),'session');assert.equal(await page.evaluate(()=>draft.current.running),true);assert.ok(await page.evaluate(()=>currentElapsed())>=5000);
+ await page.locator('.welcome-intro:not(.loading)').waitFor();await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);assert.equal(await page.evaluate(()=>view),'journal');assert.equal(await page.evaluate(()=>draft.current.running),true);assert.ok(await page.evaluate(()=>currentElapsed())>=5000);
 });
