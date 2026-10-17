@@ -6,7 +6,7 @@ for(const width of [390,1280])test('Intentions dialog and lifecycle at '+width+'
  await page.route('**/*',r=>r.request().url()==='http://olo.test/'?r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'../index.html'),'utf8')}):r.abort());
  await page.goto('http://olo.test/');
  const open=()=>page.getByRole('button',{name:'Set Intention',exact:true}).click();
- await open();const dialog=page.getByRole('dialog',{name:'Set an intention',exact:true}),text=page.getByLabel('Your intention',{exact:true});
+ await open();const dialog=page.getByRole('dialog',{name:'Set an intention',exact:true}),text=dialog.getByRole('textbox',{name:'Your intention',exact:true});
  assert.equal(await dialog.count(),1);assert.equal(await text.evaluate(e=>document.activeElement===e),true);assert.equal(await page.getByRole('button',{name:'Save intention',exact:true}).isDisabled(),true);
  await text.fill('   ');assert.equal(await page.getByRole('button',{name:'Save intention',exact:true}).isDisabled(),true);
  await page.getByRole('button',{name:'Be present',exact:true}).click();assert.equal(await text.inputValue(),'Give myself time to slow down and be present.');assert.equal(await page.getByRole('button',{name:'Be present',exact:true}).getAttribute('aria-pressed'),'true');
