@@ -14,7 +14,7 @@ function boot(){
 test('desktop and mobile navigation lead to one Visits page with controls before history',()=>{
  const h=boot();h.ctx.nav('journal');for(const id of ['sideNav','bottomNav']){assert.match(h.el(id).innerHTML,/Visits/);assert.doesNotMatch(h.el(id).innerHTML,/Sessions/)}
  const content=h.el('page-journal').innerHTML;assert.match(content,/<h1>Visits<\/h1>/);assert.ok(content.indexOf('Live timer')<content.indexOf('visitLog'));assert.match(h.el('sessionArea').innerHTML,/Begin sauna/);assert.doesNotMatch(html,/page-session/);
- h.ctx.setSessionTab('manual');assert.match(h.el('sessionArea').innerHTML,/Sauna · total minutes/);assert.match(h.el('page-journal').innerHTML,/Visit log/);
+ h.ctx.setSessionTab('manual');assert.match(h.el('sessionArea').innerHTML,/Sauna · total minutes/);assert.match(h.el('page-journal').innerHTML,/Recent Visits/);
 });
 test('Home start opens Visits and the running timer continues updating there',()=>{
  const h=boot();h.ctx.beginLive();assert.equal(h.run('view'),'journal');h.ctx.startInterval('sauna');h.run('draft.current.startedAt=Date.now()-65000');h.tick();assert.match(h.el('liveClock').textContent,/01:05/);assert.match(h.el('currentIntervalLabel').textContent,/1.1 min/);
