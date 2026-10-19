@@ -112,6 +112,22 @@ html.welcome-pending .app,html.welcome-pending .bottom-nav{visibility:hidden}
 .intention-error{color:#9b3b2f}.intention-response{border:0;padding:0;margin:22px 0;min-width:0}.intention-response legend{font-size:16px;font-weight:600}.intention-response .intention-chips{margin:12px 0}
 @media(max-width:600px){.intention-dialog{width:100%;max-width:none;max-height:calc(var(--intention-visible-height,100dvh) - 12px);margin:auto 0 var(--intention-keyboard-inset,0px);border-radius:24px 24px 0 0;border-bottom:0}.intention-body{padding:24px 20px 12px}.intention-footer{padding:16px 20px max(16px,env(safe-area-inset-bottom))}.intention-footer .actions{display:flex;flex-wrap:nowrap}.intention-footer .actions .btn{flex:1;justify-content:center}.intention-card{padding:16px 20px}.intention-invitation{gap:0}.intention-invitation .small{width:100%;padding-left:26px}.intention-history{max-width:28ch}}
 
+
+/* Match the introduction's wordmark lockup at sidebar scale. */
+.sidebar-brand{align-self:flex-start;max-width:100%;padding:0 16px;margin-bottom:48px;text-align:center}
+.sidebar-brand .brand{padding:0;font:500 28px/1.1 Manrope,sans-serif;letter-spacing:-.035em;white-space:nowrap}
+.sidebar-brand .brand-sub{width:max-content;max-width:100%;padding:6px 0 0;margin:6px auto 0;border-top:1px solid currentColor;font-size:7.2px;line-height:1.4;letter-spacing:.15em;text-transform:uppercase;color:inherit;opacity:.75}
+.reflection-hint::before{display:none}
+@media(max-width:950px){.sidebar-brand{padding:0 9px}}
+@media(max-width:680px){
+ .hero-content{width:100%;max-width:none}
+ .hero .actions{flex-wrap:nowrap;gap:8px}
+ .hero .actions>.btn{flex:1 1 0;min-width:0;white-space:nowrap;padding:12px 8px;font-size:12px;gap:6px}
+ .hero .actions>.btn:first-child{flex-grow:1.15}
+ .hero .actions>.btn svg{flex-shrink:0;width:15px;height:15px}
+ .hero .actions>.btn:first-child>svg:last-child{display:none}
+}
+
 </style>
 <script>
 // Gate the first paint only when a daily intro is eligible. No journal data is changed.
@@ -121,7 +137,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&saved?.profile?.appe
 </head>
 <body>
 <div class="app">
-<aside class="sidebar"><div class="brand">Ølo Notes</div><div class="brand-sub">Your Nordic Wellness Journal</div><nav class="nav" id="sideNav"></nav><div class="sidebar-foot"><span class="eyebrow" style="color:#9eb5a4">A SMALL RITUAL, REPEATED.</span><p>Find warmth. Embrace the cold.<br/><strong>Notice how you feel.</strong></p></div></aside>
+<aside class="sidebar"><div class="sidebar-brand" aria-label="Ølo Notes — Your Nordic Wellness Journal"><div class="brand">Ølo Notes</div><div class="brand-sub">Your Nordic Wellness Journal</div></div><nav class="nav" id="sideNav"></nav><div class="sidebar-foot"><span class="eyebrow" style="color:#9eb5a4">A SMALL RITUAL, REPEATED.</span><p>Find warmth. Embrace the cold.<br/><strong>Notice how you feel.</strong></p></div></aside>
 <main class="main"><header class="topline"><div class="eyebrow" id="pageEyebrow">THE ART OF FEELING WELL</div><div class="topline-right"><span id="todayLabel"></span></div></header>
 <section id="page-home" class="page active"></section><section id="page-journal" class="page"></section><section id="page-insights" class="page"></section><section id="page-profile" class="page"></section>
 </main></div><nav class="bottom-nav" id="bottomNav"></nav><div id="modalRoot"></div><dialog id="intentionDialog" class="intention-dialog"></dialog><dialog id="timerInfoDialog" class="timer-info-dialog" aria-labelledby="timerInfoTitle"><div class="section-head"><h2 id="timerInfoTitle">Using the timer</h2><button type="button" class="icon-btn" aria-label="Close timer information" onclick="document.getElementById('timerInfoDialog').close()"><span aria-hidden="true">×</span></button></div><div class="session-info"><p>A phone may overheat in a sauna. You can leave your phone outside, use the timer when convenient, and adjust any recorded durations afterward.</p><p>Your timer uses timestamps and saves its draft locally, so locking your phone or switching apps won't lose your elapsed time. Pause it during breaks you don't want counted.</p></div><div class="actions" style="justify-content:flex-end;margin-top:20px"><button type="button" class="btn" onclick="document.getElementById('timerInfoDialog').close()">Got it</button></div></dialog><div id="toastRoot"></div>
@@ -437,8 +453,8 @@ const reflectionProvider={
   return {...library.find(r=>r.id===id),day};
  }
 };
-function reflectionMarkup(){const r=reflectionProvider.getDaily(),topic=thoughtTopic(),quote=topic==='tolle';return `<section class="card daily-reflection" data-day="${r.day}" data-topic="${topic}" aria-label="Daily reflection"><h2 class="reflection-card-title"><button type="button" class="reflection-header" aria-expanded="false" aria-controls="reflection-body" onclick="toggleReflection(this)"><span>Today’s Thought</span><span class="reflection-chevron">${icon('chev')}</span></button></h2><div class="reflection-preview"><span class="reflection-leaf" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4C9 2 3 7 5 14s14 6 15-10ZM4 21 15 10"/></svg></span><div class="reflection-heading"><span class="reflection-topic">${THOUGHT_TOPICS[topic]}</span><span class="reflection-title">${quote?'“':''}${esc(r.headline)}${quote?'”':''}</span><span class="reflection-attribution">${quote?'— Eckhart Tolle':topic==='zen'?'Zen-inspired reflection · Ølo Notes':'Original reflection · Ølo Notes'}</span><span class="reflection-hint">A moment to pause · Read more</span></div></div><div id="reflection-body" class="reflection-body" inert><div>${quote?'<p class="reflection-context">A moment to explore · Ølo Notes</p>':''}<p>${esc(r.body)}</p>${r.sourceUrl?`<p class="reflection-source"><a href="${esc(r.sourceUrl)}" target="_blank" rel="noopener noreferrer">Read the quote in its original source ↗</a></p>`:''}</div></div></section>`}
-function toggleReflection(button){const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));const body=document.getElementById('reflection-body');body.inert=!open;body.classList.toggle('expanded',open);button.closest('.daily-reflection').querySelector('.reflection-hint').textContent=open?'A moment to pause · Read less':'A moment to pause · Read more'}
+function reflectionMarkup(){const r=reflectionProvider.getDaily(),topic=thoughtTopic(),quote=topic==='tolle';return `<section class="card daily-reflection" data-day="${r.day}" data-topic="${topic}" aria-label="Daily reflection"><h2 class="reflection-card-title"><button type="button" class="reflection-header" aria-expanded="false" aria-controls="reflection-body" onclick="toggleReflection(this)"><span>Today’s Thought</span><span class="reflection-chevron">${icon('chev')}</span></button></h2><div class="reflection-preview"><span class="reflection-leaf" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 4C9 2 3 7 5 14s14 6 15-10ZM4 21 15 10"/></svg></span><div class="reflection-heading"><span class="reflection-topic">${THOUGHT_TOPICS[topic]}</span><span class="reflection-title">${quote?'“':''}${esc(r.headline)}${quote?'”':''}</span><span class="reflection-attribution">${quote?'Eckhart Tolle':topic==='zen'?'Zen-inspired reflection · Ølo Notes':'Original reflection · Ølo Notes'}</span><span class="reflection-hint">Read more</span></div></div><div id="reflection-body" class="reflection-body" inert><div>${quote?'<p class="reflection-context">A moment to explore · Ølo Notes</p>':''}<p>${esc(r.body)}</p>${r.sourceUrl?`<p class="reflection-source"><a href="${esc(r.sourceUrl)}" target="_blank" rel="noopener noreferrer">Read the quote in its original source ↗</a></p>`:''}</div></div></section>`}
+function toggleReflection(button){const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));const body=document.getElementById('reflection-body');body.inert=!open;body.classList.toggle('expanded',open);button.closest('.daily-reflection').querySelector('.reflection-hint').textContent=open?'Read less':'Read more'}
 function refreshReflection(){const card=document.querySelector('.daily-reflection');if(view==='home'&&card&&(card.dataset.day!==localDate()||card.dataset.topic!==thoughtTopic()))card.outerHTML=reflectionMarkup()}
 // Refresh only the card at local midnight / on return, without rerendering timers.
 setInterval(refreshReflection,30000);
