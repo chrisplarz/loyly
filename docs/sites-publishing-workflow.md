@@ -16,7 +16,7 @@
 5. If anything differs, **stop**. Keep using the old installation and compare device backups before any import; choose **Safe merge** after reviewing preview counts where appropriate.
 6. Only when verified: install the Sites URL using Safari → Share → Add to Home Screen. Confirm the icon opens the Sites address and journal records appear after sign-in. Retain the old icon until this check succeeds. Afterwards consider disabling GitHub Pages; **do not delete the repo**.
 
-Browser `localStorage` is origin-specific: `github.io` and the Sites host cannot share it. The app saves journal and profile locally under `loyly-journal-v1`, cloud credentials under `loyly-cloud-v1`, sync metadata under `loyly-cloud-meta-v1`, and active timer drafts under `loyly-live-v1`. **Live timer drafts do not sync between devices.** Finish active timers before switching apps. Saved visits sync through Supabase when signed in.
+Browser `localStorage` is origin-specific: `github.io` and the Sites host cannot share it. The app saves journal and profile locally under `loyly-journal-v1`, cloud credentials under `loyly-cloud-v1`, sync metadata under `loyly-cloud-meta-v1`, and pending intentions plus active timer drafts inside the journal under `loyly-journal-v1`. Legacy `loyly-live-v1` drafts migrate on the first successful journal save. **Live timer drafts do not sync between devices.** Finish active timers before switching apps. Saved visits sync through Supabase when signed in.
 
 ## Every release: four steps
 1. **Edit in Sites:** change the current working Sites project. Keep one active feature at a time.

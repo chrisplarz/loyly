@@ -11,7 +11,7 @@ Tolle sources:
 - https://eckharttolle.com/eckhart-on-our-creative-universe/
 - https://eckharttolle.com/falling-below-and-rising-above-thought/
 
-Timer help is behind an accessible info button in the timer's upper-left corner. A native dialog places the phone-overheating warning first, followed by timestamp/draft guidance. Recent Visits initially shows the newest five; when more exist, See all visits expands the collection and Show recent visits collapses it. Add visit aligns to the collection's right edge. The Insights attendance denominator has normal letter spacing and a visible gap.
+Timer help is behind an accessible info button in the timer's upper-right corner. A native dialog places the phone-overheating warning first, followed by timestamp/draft guidance. Recent Visits initially shows the newest five; when more exist, See all visits expands the collection and Show recent visits collapses it. Add visit aligns to the collection's right edge. The Insights attendance denominator has normal letter spacing and a visible gap.
 
 No backend, authentication, or schema changes. Figma follow-up: metric links, richer weekly colors, thought-topic settings and attribution, timer help dialog, Recent Visits expansion and alignment.
 
