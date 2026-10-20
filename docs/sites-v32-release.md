@@ -1,5 +1,7 @@
 # Sites v32 — Visit intention flow
 
+Superseded by [v33](sites-v33-release.md) after shared UI drift was identified. This snapshot is historical; current root runtime follows the latest release.
+
 Published October 20, 2026 at https://olo.chrisplarz.chatgpt.site with the existing owner-only audience.
 
 - Sites project: `appgprj_6ad0ed618ee081918f2ce51dc0aca31c`

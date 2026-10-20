@@ -81,3 +81,13 @@ For every completed development task, provide:
 Do not push unreviewed changes directly to main.
 Preserve existing working features unless explicitly
 instructed otherwise.
+
+## Enforced source and release synchronization
+- Sites and GitHub are separate repositories. At task start, run `node scripts/release.mjs check --online` in the Sites checkout before editing; investigate any drift against current GitHub main and the approved Figma references. Never overwrite approved GitHub runtime changes with an older Sites copy.
+- Keep the approved bottom navigation, branding, thought-card treatments and all existing feature tests. Restore/reconcile visual changes from GitHub and Figma selectively; do not copy an entire older index over new functionality.
+- Prepare releases only with `node scripts/release.mjs prepare --version N`, after setting the same service-worker shell revision. This fetches GitHub main, refuses unreviewed upstream drift, derives dist from canonical source, and records hashes and release identity in `.openai/source-sync.json`. Do not hand-copy dist or bypass the guard.
+- Run the Node and browser suites, including `tests/release.test.cjs` and `tests/design-parity.browser.test.cjs`. The Sites helper packaging commands must include `node scripts/release.mjs check --online`; installed `.githooks` also check commits and pushes. A failed check blocks publication until the differences are reconciled.
+- Verify the published `olo-release` meta value and actual live appearance. Archive the exact release through a GitHub PR, review its runtime diff and successful CI, then merge so GitHub main matches the deployed runtime. Do not leave an archive PR open and describe GitHub as synchronized. A merge after this review is within the publishing workflow; no direct unreviewed main push.
+- Reuse the existing Ølo Notes Figma components as the visual reference and record the exact nodes reviewed; Figma is not automatically regenerated from code. No continuous three-way sync is assumed.
+
+- User-provided design attachments remain private QA references. Exclude them from public GitHub files and source snapshots unless the user explicitly authorizes that disclosure. Runtime/code parity does not require uploading those attachments.

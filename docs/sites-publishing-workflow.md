@@ -1,4 +1,7 @@
-# Löyly — Simple Sites-first publishing workflow
+# Löyly — Guarded Sites-first publishing workflow
+
+Required release checks and drift recovery: [Source synchronization](source-synchronization.md). Run `node scripts/release.mjs check --online` before edits and packaging; derive dist with the prepare command, verify design parity, and merge the reviewed archive PR after CI. An open PR is not a synchronized GitHub main.
+
 
 ## Target setup
 - **ChatGPT Sites:** the sole primary live URL and place to edit, preview, and publish.

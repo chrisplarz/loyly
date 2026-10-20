@@ -2,18 +2,22 @@
 
 A standalone, mobile-friendly web application. Your journal is stored locally first. Optionally add **Supabase email/password sign-in and cloud synchronization** so your devices share the same visits and preferences.
 
-## Upload to GitHub Pages
+## Publish Ølo Notes
 
-Upload **`index.html`** to the root of your GitHub Pages repository, replacing the old one. `supabase-setup.sql` and this README are just instructions and do **not** need to be published. You can also open `index.html` locally (cloud auth works best over HTTPS).
+The live host is the existing [Ølo Notes Site](https://olo.chrisplarz.chatgpt.site). GitHub is the approved source/version archive; publishing GitHub Pages is not part of this workflow.
 
-**Before upgrading:** Open your existing Löyly and select **Profile → Export backup** on each device containing entries. Keep those JSON backups.
+Before editing, run `node scripts/release.mjs check --online` in the Sites checkout and compare affected UI with the required Ølo Notes Figma design system. Prepare output with `node scripts/release.mjs prepare --version N`, then run the application and design-parity tests. The final Sites packaging commands must include `node scripts/release.mjs check --online`. Archive the exact published source with a reviewed, passing GitHub PR and merge it. Do not describe an open archive PR as synchronized.
+
+See [source synchronization](docs/source-synchronization.md) for the guard, installed hooks, drift recovery, and exact release checks. There is no automatic Figma ↔ GitHub ↔ Sites synchronization.
+
+**Before upgrading:** Open your existing journal and select **Profile → Export backup** on each device containing entries. Keep those JSON backups. This release keeps the same Sites origin, local storage keys and cloud project.
 
 ## One-time Supabase cloud setup
 
 1. Create a project at https://supabase.com/dashboard (a free project may be enough for a personal journal; check Supabase's current pricing).
 2. Open your project → **SQL Editor**, paste `supabase-setup.sql` from this folder, and **Run**. This creates the journal table and row-level security rules.
 3. Open project **Settings → API Keys** (or **Project Settings → Data API**) and copy the **Project URL** and **publishable/anon public key**. **NEVER** copy the service_role key, secret API key, database password, or any private credential into the web app or GitHub.
-4. Publish the updated `index.html` to GitHub Pages.
+4. Publish the tested update to the existing Sites project using the guarded publishing workflow above.
 5. On your **desktop**, go to **Profile → Cloud sync**, enter the project URL and publishable/anon key, click **Connect project**. Then **Create account** using an email and password. If email confirmation is enabled, open the verification email and sign in afterward.
 6. Choose **Sync now**. Your desktop journal uploads to your private account.
 7. On your **phone**, open the updated GitHub Pages site, go to **Profile → Cloud sync**, enter the **same URL/key** and **sign in with the same email/password**. Tap **Sync now**. Your phone will merge its existing visits with the cloud journal.
