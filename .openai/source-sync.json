@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "github": {
+    "remote": "https://github.com/chrisplarz/loyly.git",
+    "branch": "main",
+    "commit": "32195a089f6cda0845bf429d52eb7d5ee2c52a60",
+    "files": {
+      "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
+      "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
+      "assets/paper.svg": "6abfe7f03019dcdd97656d5d245497a859cb9763a6607806e00350d3a21116a4",
+      "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
+      "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
+      "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
+      "index.html": "74e92b80d729fd22d70049d1e23a2cd67d6069b1fea2f05ec62e0ac477b78c4b",
+      "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
+      "sw.js": "ceb138a7a0fa7a32d1e58c7bb080eef5281ebbb51df1c672b78c2f2190f46e75"
+    }
+  },
+  "design": {
+    "fileKey": "ZFaJvHXzlUXyopMzk3kZm3",
+    "nodes": [
+      "4:49",
+      "4:17",
+      "6:397",
+      "6:396",
+      "7:78"
+    ],
+    "quoteFontInApp": "Georgia",
+    "reviewed": "2026-10-20"
+  },
+  "prepared": {
+    "version": 33,
+    "files": {
+      "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
+      "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
+      "assets/paper.svg": "6abfe7f03019dcdd97656d5d245497a859cb9763a6607806e00350d3a21116a4",
+      "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
+      "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
+      "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
+      "index.html": "143e6f7c0e234d5455381fae012483dd3b2843ee4fc814a7779d3bd20c4d5a80",
+      "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
+      "sw.js": "5aa1cabff35d3b930cb1c8fdaafa96851358878adda5fd34d7656bbd1aa593f4"
+    }
+  }
+}

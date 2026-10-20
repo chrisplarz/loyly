@@ -1,0 +1,1 @@
+User supplied October 20, 2026, in the Sites/GitHub/Figma drift report. Reference for the warm paper thought card, Georgia quote typography, and cream full-label bottom-navigation pill. This is QA reference material only. Match the approved GitHub implementation and Figma 4:49, 6:397; do not embed the screenshot as UI.
