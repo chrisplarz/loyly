@@ -1,12 +1,16 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
-for(const width of [390,1280])test('home and Visits refinements at '+width+'px',async t=>{
+for(const width of [320,390,1280])test('home and Visits refinements at '+width+'px',async t=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});t.after(()=>browser.close());
  const page=await browser.newPage({viewport:{width,height:951},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>r.request().url()==='http://olo.test/'?r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'../index.html'),'utf8')}):r.abort());
  await page.goto('http://olo.test/');
+ const hero=await page.locator('.hero .actions .btn').evaluateAll(ns=>ns.map(n=>({top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,fits:n.scrollWidth<=n.clientWidth})));
+ assert.equal(hero.length,2);assert.ok(Math.abs(hero[0].top-hero[1].top)<1);assert.ok(hero.every(b=>b.fits));
+ assert.equal(await page.getByRole('button',{name:'Change thought topic →',exact:true}).count(),0);
+ assert.equal(await page.locator('.sidebar-brand .brand-sub').evaluate(e=>getComputedStyle(e).textTransform),'uppercase');
  assert.equal(await page.locator('.daily-reflection').getAttribute('data-topic'),'tolle');
- assert.equal(await page.locator('.reflection-attribution').textContent(),'— Eckhart Tolle');
+ assert.equal(await page.locator('.reflection-attribution').textContent(),'Eckhart Tolle');
  const initial=await page.locator('.reflection-title').textContent();await page.reload();assert.equal(await page.locator('.reflection-title').textContent(),initial);
  await page.locator('.reflection-header').click();assert.match(await page.getByRole('link',{name:/original source/}).getAttribute('href'),/^https:\/\/(teachings\.)?eckharttolle\.com\//);
  await page.evaluate(()=>{db.visits=Array.from({length:8},(_,i)=>({id:'v-'+i,date:localDate(new Date(2026,9,16-i)),createdAt:8-i,intervals:[{type:'sauna',durationMs:60000}]}));renderHome()});
