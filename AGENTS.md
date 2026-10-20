@@ -29,6 +29,16 @@ sauna sessions, cold plunges, visits, mood, and wellness trends.
 - Use existing design tokens whenever possible.
 - Avoid unnecessary visual changes.
 
+## Ølo Notes Design System — Required for Future Design Work
+- Use [Ølo Notes — Design System](https://www.figma.com/design/ZFaJvHXzlUXyopMzk3kZm3) as the required baseline for all new designs and changes to existing UI in this app. The file may be used directly while library publication is pending.
+- Before designing or implementing UI, inspect the relevant foundations, components, variants, and guidance in that file. Reuse its typography, semantic color variables, spacing, radii, effects, icons, imagery, responsive rules, and interaction patterns.
+- Compose existing components before introducing a new pattern. Avoid duplicate components, near-identical colors, one-off text styles, and unnecessary variables.
+- When a new design warrants a pattern the system does not yet support, extend the same Figma design system as part of that work. Create the smallest reusable addition that meets the need and preserves the app's current design language.
+- For each extension, reuse existing foundations first; add only necessary tokens, component properties, variants, and states. Bind visual properties to variables and shared styles, document purpose and usage, and verify desktop/mobile layouts and accessibility.
+- Keep the design system, affected designs, and implementation references aligned in the same task. Record new or changed patterns in the completion summary. Do not assume code and Figma synchronize automatically; if Figma access is unavailable, document the proposed extension and outstanding synchronization explicitly.
+- Treat the system's consolidation and accessibility proposals as proposed implementation changes, not as values already adopted by the app. Apply them through a focused change with visual verification.
+- The approved Libre Baskerville quote-font substitution applies to Figma only. Preserve the app's Georgia quote typography unless a production typography change is explicitly requested.
+
 ## Functional Standards
 - Preserve all existing journal functionality.
 - Maintain Supabase authentication and cloud sync.
