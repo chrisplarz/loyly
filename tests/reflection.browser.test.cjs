@@ -13,8 +13,8 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  const header=page.locator('.reflection-header');
  assert.equal(await page.locator('.reflection-heading time').count(),0);
  assert.equal(await page.locator('.reflection-hint').textContent(),'Read more');
- assert.equal(await page.locator('.daily-reflection').evaluate(el=>getComputedStyle(el).backgroundColor),await page.locator('.week-grid').evaluate(el=>getComputedStyle(el.closest('.card')).backgroundColor));
- assert.deepEqual(await page.locator('#page-home .stats .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(3).fill(['uppercase','rgb(37, 74, 67)']));
+ assert.equal(await page.locator('.daily-reflection').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 254, 250)');
+ assert.deepEqual(await page.locator('#page-home .home-activity .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(2).fill(['none','rgb(37, 74, 67)']));
  assert.equal(await header.getAttribute('aria-expanded'),'false');
  const headline=await page.locator('.reflection-title').textContent();
  assert.equal(await page.locator('#reflection-body').isVisible(),false);
@@ -24,9 +24,9 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  assert.equal(await page.locator('#reflection-body').isVisible(),true);
  await page.keyboard.press('Space');assert.equal(await header.getAttribute('aria-expanded'),'false');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
- assert.equal(await page.locator('.section.split > .daily-reflection').count(),1);
+ assert.equal(await page.locator('.home-thought > .daily-reflection').count(),1);
  assert.equal(await page.getByText('Last reflection').count(),0);
- assert.deepEqual(await page.locator('.week-grid .day').allTextContents(),['11Sun','12Mon','13Tue','14Wed','15Thu','16Fri','17Sat']);
+ assert.deepEqual(await page.locator('.week-grid .day-circle').allTextContents(),['11','12','13','14','15','16','17']);
  assert.equal(await page.evaluate(()=>startOfWeek(new Date(2026,9,17))),'2026-10-11');
  assert.equal(await page.evaluate(()=>startOfWeek(new Date(2026,9,18))),'2026-10-18');
  await page.reload();assert.equal(await page.locator('.reflection-title').textContent(),headline);
@@ -40,11 +40,11 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  assert.deepEqual(await page.locator('#page-insights .bar-col small').allTextContents(),['S','M','T','W','T','F','S']);
  await page.clock.setSystemTime(new Date(2026,9,18,12));
  await page.evaluate(()=>renderHome());
- assert.deepEqual(await page.locator('.week-grid .day').allTextContents(),['18Sun','19Mon','20Tue','21Wed','22Thu','23Fri','24Sat']);
- assert.equal(await page.locator('.section.split .small.muted').first().textContent(),'0 of 3 days');
+ assert.deepEqual(await page.locator('.week-grid .day-circle').allTextContents(),['18','19','20','21','22','23','24']);
+ assert.equal(await page.locator('.home-goal .goal-copy strong').textContent(),'0 of 3 days');
  await page.evaluate(()=>{db.visits=[{id:'previous-week',date:'2026-10-17',intervals:[]},{id:'new-week',date:'2026-10-18',intervals:[]}];renderHome()});
- assert.equal(await page.locator('.section.split .small.muted').first().textContent(),'1 of 3 days');
- assert.equal(await page.locator('.stats .stat-number').first().textContent(),'1');
+ assert.equal(await page.locator('.home-goal .goal-copy strong').textContent(),'1 of 3 days');
+ assert.equal(await page.locator('.goal-segment.filled').count(),1);
  const lengths=await page.evaluate(()=>DAILY_REFLECTIONS.map(r=>[r.headline.split(/\s+/).length,r.body.split(/\s+/).length]));
  assert.equal(lengths.length,30);for(const [h,b] of lengths){assert.ok(h>=5&&h<=10);assert.ok(b>=50&&b<=80,`body: ${b}`)}
  await page.evaluate(()=>{beginLive();startInterval('sauna')});

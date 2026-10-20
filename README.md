@@ -117,3 +117,7 @@ The five-second welcome plays on page launch and returning from the background, 
 The header weather control opens a city picker. City search uses Open-Meteo geocoding; current temperature, weather code and day/night state use its forecast API. Only the selected city is stored on this device under `olo-weather-location-v1`; it is separate from journal data and cloud sync. No automatic geolocation is requested. Refreshes are limited to roughly every 15 minutes, and current data older than 30 minutes is marked unavailable. Missing location and network failures do not invent weather readings. The weather dialog links to Open-Meteo attribution and supports changing/removing the city.
 
 Weather integration: https://open-meteo.com/en/docs and https://open-meteo.com/en/docs/geocoding-api. Run `node tests/weather.browser.test.cjs` for mocked condition mapping, city selection, persistence and network-failure checks. Physical iPhone Safari remains unverified.
+
+## Home and calendar review candidate
+
+Unpublished preview v36 introduces the weekly attendance/goal layout and calendar planner. See [review notes](docs/home-week-and-planning.md) for behavior, Figma references, tests, and publication limits. This branch is a review candidate, not an archive of a published release.

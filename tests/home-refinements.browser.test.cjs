@@ -14,7 +14,7 @@ for(const width of [320,390,1280])test('home and Visits refinements at '+width+'
  const initial=await page.locator('.reflection-title').textContent();await page.reload();assert.equal(await page.locator('.reflection-title').textContent(),initial);
  await page.locator('.reflection-header').click();assert.match(await page.getByRole('link',{name:/original source/}).getAttribute('href'),/^https:\/\/(teachings\.)?eckharttolle\.com\//);
  await page.evaluate(()=>{db.visits=Array.from({length:8},(_,i)=>({id:'v-'+i,date:localDate(new Date(2026,9,16-i)),createdAt:8-i,intervals:[{type:'sauna',durationMs:60000}]}));renderHome()});
- await page.getByRole('button',{name:/View visits this week/}).focus();await page.keyboard.press('Enter');
+ await page.evaluate(()=>openVisitLog());
  assert.equal(await page.locator('#visitLogTitle').textContent(),'Recent Visits');assert.equal(await page.locator('#visitsCollection .visit-item').count(),5);
  assert.equal(await page.locator('#visitLogTitle').evaluate(e=>document.activeElement===e),true);
  const log=await page.locator('#visitLog').boundingBox(),add=await page.locator('#visitLog .btn').boundingBox();assert.ok(Math.abs((log.x+log.width)-(add.x+add.width))<2);
