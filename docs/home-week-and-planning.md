@@ -80,3 +80,17 @@ Removed intention entry and intention-sharing UI. Added the three-location selec
 - Private design screenshots are excluded from the public review branch. This remains an unpublished review candidate, not an archive of a deployed release.
 
 Final refinement validation: all 45 Node checks and all 17 focused planning/browser checks passed, including actual ICS download, failure/retry, dialog dismissal, persistence and responsive layouts. The PR records the final full-suite and CI outcome.
+
+## Last-visit feeling check-in (preview v37)
+
+The approved mockup included this card, but the original implementation prompt explicitly excluded a new reflection system. The user has now added it to scope.
+
+Home shows **How did your last visit feel?** for the most recent completed, non-future visit with recorded time, above Today's Thought. Choices are **Calmer**, **Energized**, and **About the same**. They save immediately to that visit, independently from numeric moods, intention responses, notes, timers, plans, and attendance. The selected choice and save feedback remain visible; change or clear it at any time. **View visit** opens the existing details and the same editable controls. **Not now** hides the Home prompt for that visit while preserving any response; it remains available in details. A newer completed visit receives its own prompt. No completed visits means no prompt.
+
+Optional JSON fields `visitFeeling` (one of the three responses or null) and `visitFeelingSkipped` (boolean) use the existing journal persistence, timestamped cloud merge, export/import and recovery paths. No database/schema migration, auth/RLS changes, or dependencies. Failed saves roll back the journal and offer Retry save. Existing manual edits preserve the response. Backups validate and retain both fields, CSV includes the response, and analysis exports include it only with the explicit notes/reflections opt-in. Calendar descriptions exclude it.
+
+Reused paper surface, border, heading/body styles and Choice chip `3:628` (`3:624` / `3:626`). Added **Last visit check-in** `46:853`, with Unanswered `46:715`, Answered `46:761`, and Save error `46:807` specimens and behavior guidance. No new tokens. Figma and browser mobile/desktop screenshots were reviewed.
+
+Added focused browser coverage for response/edit/clear/reload, optional dismissal/new visits, absent/empty/future visits, failed save/dismissal/retry, existing mood/notes preservation, backup, timestamped sync merge and export privacy. Added backup validation coverage and retained all existing suites. This remains an unpublished review candidate for follow-up PR #32 (PR #31 is already merged); physical iPhone and real-account two-device checks remain outstanding.
+
+Check-in validation: all 46 Node checks and all 59 browser checks passed, including mobile/desktop visual review. A final focused rerun also covers keyboard focus restoration after editing the visit response.
