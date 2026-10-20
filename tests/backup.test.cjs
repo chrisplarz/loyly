@@ -56,3 +56,5 @@ test('appearance preferences round trip while legacy backups remain compatible',
  const normalized=parseBackup(JSON.stringify({profile:{...profile,appearance:{background:'unknown',dailyIntro:'false'}},visits:[]}));
  assert.deepEqual(json(normalized.profile.appearance),{background:'botanical',dailyIntro:true});
 });
+
+test('optional visit feelings round trip and reject malformed values',()=>{for(const feeling of ['Calmer','Energized','About the same',null]){const v={...visit('feeling'),visitFeeling:feeling,visitFeelingSkipped:true};assert.deepEqual(json(parseBackup(JSON.stringify(backup([v])))).visits[0],v)}for(const extra of [{visitFeeling:'invalid'},{visitFeelingSkipped:'yes'}])assert.throws(()=>parseBackup(JSON.stringify(backup([{...visit('bad'),...extra}]))))});

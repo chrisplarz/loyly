@@ -120,4 +120,4 @@ Weather integration: https://open-meteo.com/en/docs and https://open-meteo.com/e
 
 ## Home and calendar review candidate
 
-Unpublished preview v36 introduces the weekly attendance/goal layout and calendar planner. See [review notes](docs/home-week-and-planning.md) for behavior, Figma references, tests, and publication limits. This branch is a review candidate, not an archive of a published release.
+Unpublished preview v37 introduces the weekly attendance/goal layout and calendar planner. See [review notes](docs/home-week-and-planning.md) for behavior, Figma references, tests, and publication limits. This branch is a review candidate, not an archive of a published release.
