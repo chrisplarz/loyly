@@ -27,3 +27,4 @@ jobs:
       - run: node tests/intentions.browser.test.cjs
       - run: node tests/design-parity.browser.test.cjs
       - run: node tests/planning.browser.test.cjs
+      - run: node tests/section-jump-nav.browser.test.cjs
