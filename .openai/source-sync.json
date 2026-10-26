@@ -3,7 +3,7 @@
   "github": {
     "remote": "https://github.com/chrisplarz/loyly.git",
     "branch": "main",
-    "commit": "1ec9c1f0f1ab76eb281632027fc4ab8f2cad8f61",
+    "commit": "fb4d43bc63c59c854862e44f6692fd0077ae3928",
     "files": {
       "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
       "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
@@ -11,9 +11,9 @@
       "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
       "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
       "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
-      "index.html": "0b9581963b189da38e2d0007c916e90be51ddf3dd254c82e31d874cf5f4633c3",
+      "index.html": "75c6fb9f633fcf22c349a5e223ab1bb266ea346e28aa2b8a86c57a5b9cb38494",
       "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
-      "sw.js": "b50ce61b52d319ed53d007662fc6b152e0dafded5dd586e7f7cbf5a01d046644"
+      "sw.js": "55d90d79dcf14052d5e2a31bf95c3960338cd5913e6252813ca5cfb4c747d40e"
     }
   },
   "design": {
@@ -34,13 +34,18 @@
       "36:475",
       "36:479",
       "41:326",
-      "41:287"
+      "41:287",
+      "3:187",
+      "3:241",
+      "6:68",
+      "69:760",
+      "69:761"
     ],
     "quoteFontInApp": "Georgia",
-    "reviewed": "2026-10-20"
+    "reviewed": "2026-10-26"
   },
   "prepared": {
-    "version": 43,
+    "version": 47,
     "files": {
       "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
       "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
@@ -48,9 +53,9 @@
       "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
       "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
       "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
-      "index.html": "75c6fb9f633fcf22c349a5e223ab1bb266ea346e28aa2b8a86c57a5b9cb38494",
+      "index.html": "56938810b501e93333dff84c1f06f1b1593552c92415fd0f3000aaff59e70d71",
       "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
-      "sw.js": "55d90d79dcf14052d5e2a31bf95c3960338cd5913e6252813ca5cfb4c747d40e"
+      "sw.js": "ad89545ce92313e19059710c81fc70eb92ccd83f432fdb99467d29f4bac90a25"
     }
   }
 }
