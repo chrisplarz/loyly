@@ -52,7 +52,7 @@
     "reviewed": "2026-10-26"
   },
   "prepared": {
-    "version": 52,
+    "version": 53,
     "files": {
       "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
       "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
@@ -63,9 +63,9 @@
       "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
       "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
       "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
-      "index.html": "18c772e3295755e4e19bf067bd12d02572b784e39badb0cb5ccc2aea0943a454",
+      "index.html": "646475120b14011d040b2190868e369ff66c38acc165206eb201b4aa1ed0a21e",
       "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
-      "sw.js": "0fa5b4892b9960be4df146cac0a902d305bfdf0bab5c166bcf810c6c3e8145b4"
+      "sw.js": "906b50af4f4e2e8d8ea80fb1e424e92b858a11237791fd131352e9b804c60b69"
     }
   }
 }
