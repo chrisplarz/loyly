@@ -94,3 +94,9 @@ Reused paper surface, border, heading/body styles and Choice chip `3:628` (`3:62
 Added focused browser coverage for response/edit/clear/reload, optional dismissal/new visits, absent/empty/future visits, failed save/dismissal/retry, existing mood/notes preservation, backup, timestamped sync merge and export privacy. Added backup validation coverage and retained all existing suites. This remains an unpublished review candidate for follow-up PR #32 (PR #31 is already merged); physical iPhone and real-account two-device checks remain outstanding.
 
 Check-in validation: all 46 Node checks and all 59 browser checks passed, including mobile/desktop visual review. A final focused rerun also covers keyboard focus restoration after editing the visit response.
+
+## PR #32 conflict resolution (review candidate v48, 2026-10-26)
+
+Merged the current GitHub main (deployed archive v43) into the check-in branch, preserving both the optional Home check-in and the later Settings jump navigation and planner refinements. Both browser suites remain in CI. Source, dist, service worker and release fingerprints were regenerated with the guarded release prepare command for candidate v48. This does not publish or replace the newer Sites preview v47 or merge an unpublished candidate into the production archive.
+
+The Home card appears above Today's Thought when there is a completed visit with recorded time. Choosing Not now hides it for that visit; a newer completed visit restores the prompt. The response remains editable in visit details. No database or Figma changes were needed for this conflict resolution.
