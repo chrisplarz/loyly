@@ -1,11 +1,20 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8'),release=JSON.parse(fs.readFileSync(path.join(__dirname,'../.openai/source-sync.json'))).prepared.version;
-for(const width of [320,390,635,1280])test('approved Figma/GitHub navigation, branding and thought card at '+width+'px',async t=>{
+for(const width of [320,635,1280])test('approved Figma/GitHub navigation, branding and thought card at '+width+'px',async t=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox']});t.after(()=>browser.close());
  const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));t.after(()=>assert.deepEqual(errors,[]));
  await page.route('**/*',r=>r.request().url()==='http://olo-parity.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());
  await page.addInitScript(()=>localStorage.setItem('loyly-journal-v1',JSON.stringify({profile:{goal:3,appearance:{dailyIntro:false}},visits:[]})));
- await page.goto('http://olo-parity.test/');assert.equal(await page.locator('meta[name="olo-release"]').getAttribute('content'),String(release));
+ await page.goto('http://olo-parity.test/');
+ assert.equal(await page.title(),'Ølo Notes — Nordic Wellness Journal');
+ assert.equal(await page.locator('.brand').textContent(),'Ølo Notes');assert.equal(await page.locator('.brand-sub').textContent(),'Your Nordic Wellness Journal');
+ for(const [route,heading,eyebrow] of [['journal','Visits','Make space to reset'],['insights','Insights','Notice your rhythm']]){
+  await page.evaluate(route=>nav(route),route);assert.equal(await page.locator('#page-'+route+' h1').textContent(),heading);assert.equal(await page.locator('#pageEyebrow').textContent(),eyebrow);
+ }
+ await page.evaluate(()=>nav('home'));assert.equal(await page.locator('#pageEyebrow').textContent(),'The art of feeling well');
+ assert.equal(await page.locator('#weatherControl').count(),0);
+ assert.equal(await page.locator('#pageEyebrow').evaluate(el=>{const range=document.createRange();range.selectNodeContents(el);return range.getClientRects().length}),1);
+ assert.equal(await page.locator('meta[name="olo-release"]').getAttribute('content'),String(release));
  assert.equal(await page.locator('.reflection-hint').textContent(),'Read more');assert.equal(await page.locator('.reflection-attribution').textContent(),'Eckhart Tolle');assert.equal(await page.locator('.reflection-hint').evaluate(e=>getComputedStyle(e,'::before').display),'none');assert.match(await page.locator('.reflection-title').evaluate(e=>getComputedStyle(e).fontFamily),/^Georgia/);assert.equal(await page.locator('.reflection-title').evaluate(e=>getComputedStyle(e).fontStyle),'italic');
  await page.getByRole('button',{name:'Today’s Thought',exact:true}).click();assert.equal(await page.locator('.reflection-hint').textContent(),'Read less');await page.getByRole('button',{name:'Today’s Thought',exact:true}).click();assert.equal(await page.locator('#reflection-body').evaluate(e=>e.inert),true);
  if(width<=680){
@@ -18,5 +27,4 @@ for(const width of [320,390,635,1280])test('approved Figma/GitHub navigation, br
  }
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  if(process.env.OLO_RESTORED_SCREENSHOT){await page.screenshot({path:process.env.OLO_RESTORED_SCREENSHOT+'-'+width+'.png',fullPage:true});if(width<=680){await page.locator('.daily-reflection').scrollIntoViewIfNeeded();await page.screenshot({path:process.env.OLO_RESTORED_SCREENSHOT+'-detail-'+width+'.png'})}}
- await page.getByRole('button',{name:'Set Intention',exact:true}).click();assert.equal(await page.getByRole('dialog',{name:'Set an intention',exact:true}).isVisible(),true);await page.getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(await page.locator('#page-journal').isVisible(),true);assert.equal(await page.locator('#liveClock').textContent(),'00:00');
 });

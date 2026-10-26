@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
-for(const width of [320,390,768,1280])for(const reducedMotion of ['reduce','no-preference'])test(`Settings jumps ${width}px ${reducedMotion}`,async t=>{
+for(const [width,reducedMotion] of [[320,'reduce'],[390,'no-preference'],[1280,'reduce']])test(`Settings jumps ${width}px ${reducedMotion}`,async t=>{
  const browser=await chromium.launch({headless:true});t.after(()=>browser.close());const page=await browser.newPage({viewport:{width,height:850},reducedMotion}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>r.request().url()==='http://jump.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());
  await page.addInitScript(()=>localStorage.setItem('loyly-journal-v1',JSON.stringify({profile:{goal:3,appearance:{dailyIntro:false}},visits:[]})));

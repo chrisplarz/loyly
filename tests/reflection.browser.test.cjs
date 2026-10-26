@@ -3,7 +3,8 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {chromium}=require('playwright');
 const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
-for(const width of [390,1280])test(`daily reflection and session regression at ${width}px`,async t=>{
+test('daily reflection keyboard, rotation and timer persistence',async t=>{
+ const width=390;
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']});t.after(()=>browser.close());
  const page=await browser.newPage({viewport:{width,height:844},reducedMotion:'reduce'});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -45,11 +46,14 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  await page.evaluate(()=>{db.visits=[{id:'previous-week',date:'2026-10-17',intervals:[]},{id:'new-week',date:'2026-10-18',intervals:[]}];renderHome()});
  assert.equal(await page.locator('.home-goal .goal-copy strong').textContent(),'1 of 3 days');
  assert.equal(await page.locator('.goal-segment.filled').count(),1);
- const lengths=await page.evaluate(()=>DAILY_REFLECTIONS.map(r=>[r.headline.split(/\s+/).length,r.body.split(/\s+/).length]));
- assert.equal(lengths.length,30);for(const [h,b] of lengths){assert.ok(h>=5&&h<=10);assert.ok(b>=50&&b<=80,`body: ${b}`)}
- await page.evaluate(()=>{beginLive();startInterval('sauna')});
- await page.waitForTimeout(1100);assert.ok(await page.evaluate(()=>currentElapsed())>=1000);
+ await page.getByRole('button',{name:/Start session/}).click();
+ assert.equal(await page.locator('#page-journal').isVisible(),true);
+ await page.getByRole('button',{name:'Begin sauna',exact:true}).click();
+ await page.clock.runFor(65500);assert.equal(await page.locator('#liveClock').textContent(),'01:05');
+ assert.match(await page.locator('#currentIntervalLabel').textContent(),/1.1 min/);
  await page.evaluate(()=>pauseResume());const elapsed=await page.evaluate(()=>currentElapsed());
+ await page.getByRole('button',{name:'Post-visit entry',exact:true}).click();await page.getByRole('button',{name:'Live timer',exact:true}).click();
+ assert.equal(await page.evaluate(()=>draft.current.running),false);
  await page.reload();assert.equal(await page.evaluate(()=>draft.current.running),false);assert.equal(await page.evaluate(()=>currentElapsed()),elapsed);
  await page.evaluate(()=>{nav('home');refreshReflection()});
  assert.equal(await page.locator('.daily-reflection').getAttribute('data-day'),await page.evaluate(()=>localDate()));

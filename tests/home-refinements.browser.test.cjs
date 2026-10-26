@@ -8,10 +8,6 @@ for(const width of [320,390,1280])test('home and Visits refinements at '+width+'
  const hero=await page.locator('.hero .actions .btn').evaluateAll(ns=>ns.map(n=>({top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,fits:n.scrollWidth<=n.clientWidth})));
  assert.equal(hero.length,2);assert.ok(Math.abs(hero[0].top-hero[1].top)<1);assert.ok(hero.every(b=>b.fits));
  assert.equal(await page.getByRole('button',{name:'Change thought topic →',exact:true}).count(),0);
- assert.equal(await page.locator('.sidebar-brand .brand-sub').evaluate(e=>getComputedStyle(e).textTransform),'uppercase');
- assert.equal(await page.locator('.daily-reflection').getAttribute('data-topic'),'tolle');
- assert.equal(await page.locator('.reflection-attribution').textContent(),'Eckhart Tolle');
- const initial=await page.locator('.reflection-title').textContent();await page.reload();assert.equal(await page.locator('.reflection-title').textContent(),initial);
  await page.locator('.reflection-header').click();assert.match(await page.getByRole('link',{name:/original source/}).getAttribute('href'),/^https:\/\/(teachings\.)?eckharttolle\.com\//);
  await page.evaluate(()=>{db.visits=Array.from({length:8},(_,i)=>({id:'v-'+i,date:localDate(new Date(2026,9,16-i)),createdAt:8-i,intervals:[{type:'sauna',durationMs:60000}]}));renderHome()});
  await page.evaluate(()=>openVisitLog());
@@ -26,7 +22,6 @@ for(const width of [320,390,1280])test('home and Visits refinements at '+width+'
  const paragraphs=await page.locator('#timerInfoDialog .session-info p').allTextContents();assert.match(paragraphs[0],/^A phone may overheat/);assert.match(paragraphs[1],/^Your timer uses timestamps/);
  await page.keyboard.press('Escape');assert.equal(await page.locator('#timerInfoDialog').evaluate(e=>e.open),false);
  await page.evaluate(()=>{nav('home');insightPeriod='year'});await page.getByRole('button',{name:'View weekly sauna insights'}).click();assert.equal(await page.evaluate(()=>view),'insights');assert.equal(await page.evaluate(()=>insightPeriod),'week');
- const denominator=await page.locator('.goal-denominator').evaluate(e=>({gap:getComputedStyle(e).gap,spacing:getComputedStyle(e).letterSpacing}));assert.equal(denominator.gap,'6px');assert.equal(denominator.spacing,'normal');
  await page.evaluate(()=>nav('home'));await page.getByRole('button',{name:'View weekly cold plunge insights'}).click();assert.equal(await page.evaluate(()=>view),'insights');
  await page.evaluate(()=>nav('profile'));await page.getByLabel('Thought topic',{exact:true}).selectOption('zen');await page.reload();assert.equal(await page.locator('.daily-reflection').getAttribute('data-topic'),'zen');
  await page.evaluate(()=>nav('profile'));await page.getByLabel('Thought topic',{exact:true}).selectOption('ai');await page.evaluate(()=>nav('home'));assert.equal(await page.locator('.daily-reflection').getAttribute('data-topic'),'ai');

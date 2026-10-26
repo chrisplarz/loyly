@@ -69,11 +69,10 @@ local conflicts, so use replacement when deliberately rolling back.
 No build step or runtime dependency was added. With Node 20 or newer:
 
 ```sh
-node tests/backup.test.cjs
 # Browser tests need Playwright and Chromium (development tools only).
 npm install --no-save --package-lock=false playwright@1.56.1
 npx playwright install chromium
-node tests/backup.browser.test.cjs
+node --test --test-concurrency=2 tests/*.test.cjs
 ```
 
 Set `CHROMIUM_PATH` to use an installed Chromium executable. The browser suite
@@ -102,21 +101,23 @@ stable in memory for that page; reload persistence then depends on browser stora
 being available. Clearing site data resets the rotation.
 
 Run `node tests/reflection.browser.test.cjs` with the same Playwright setup above
-for mobile/desktop interaction, daily rotation, reload persistence, content length,
-storage failure, and timer regression checks. No database changes are required.
+for keyboard interaction, daily rotation, reload persistence, storage failure,
+and timer regression checks. Responsive appearance is covered by design-parity tests. No database changes are required.
 Figma should receive the new collapsed/expanded card states beside weekly rhythm;
 this code change does not update Figma automatically.
 
 
-## Ølo Notes — branding, launch welcome and weather
+## Ølo Notes — branding and launch welcome
 
 The visible name is Ølo Notes, with the tagline Your Nordic Wellness Journal. Browser and installable-app names follow the new brand. Existing journal, cloud, timer, backup and recovery keys remain unchanged for compatibility.
 
 The five-second welcome plays on page launch and returning from the background, without resetting running timers or daily thought rotation. The existing preference still controls playback; reduced motion, Skip and media failure remain supported. The former once-a-day marker is ignored.
 
-The header weather control opens a city picker. City search uses Open-Meteo geocoding; current temperature, weather code and day/night state use its forecast API. Only the selected city is stored on this device under `olo-weather-location-v1`; it is separate from journal data and cloud sync. No automatic geolocation is requested. Refreshes are limited to roughly every 15 minutes, and current data older than 30 minutes is marked unavailable. Missing location and network failures do not invent weather readings. The weather dialog links to Open-Meteo attribution and supports changing/removing the city.
+Branding, page headings and the single-line header are checked in `tests/design-parity.browser.test.cjs`. The header has no weather picker; the retired weather test's unused API mocks have been removed.
 
-Weather integration: https://open-meteo.com/en/docs and https://open-meteo.com/en/docs/geocoding-api. Run `node tests/weather.browser.test.cjs` for mocked condition mapping, city selection, persistence and network-failure checks. Physical iPhone Safari remains unverified.
+### Test maintenance
+
+The test review retains distinct backup, privacy, release, calendar/DST, timer, intention and check-in behavior. Duplicate Visits mock-page tests were consolidated into real browser flows. Layout tests use representative widths; storage/error workflows run once unless layout changes the interaction. Screenshots are opt-in. CI discovers test files, so adding a suite does not require another workflow line.
 
 ## Home and calendar review candidate
 

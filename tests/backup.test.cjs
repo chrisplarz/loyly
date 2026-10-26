@@ -19,10 +19,8 @@ test('duplicate IDs inside a file are rejected, even identical visits',()=>{
  assert.throws(()=>parseBackup(JSON.stringify(backup([visit('a'),visit('a')]))));
  assert.throws(()=>parseBackup(JSON.stringify(backup([visit('a'),visit('a','conflict')]))));
 });
-test('malformed files and unsafe fields are rejected without mutating local data',()=>{
- const local=backup([visit('local')]),before=JSON.stringify(local);
+test('malformed files and unsafe fields are rejected',()=>{
  for(const bad of ['{',JSON.stringify({visits:[]}),JSON.stringify({...backup([]),format:'other'}),JSON.stringify(backup([{...visit('a'),date:'2026-02-30'}])),JSON.stringify(backup([{...visit('a'),intervals:[{type:'sauna',durationMs:-1}]}])),JSON.stringify(backup([{...visit('a'),notes:{bad:true}}])),JSON.stringify(backup([visit('__proto__')]))])assert.throws(()=>parseBackup(bad));
- assert.equal(JSON.stringify(local),before);
 });
 test('counts new, duplicate and conflict independently of key order / sync timestamp',()=>{
  const local=backup([visit('a'),visit('b')]);

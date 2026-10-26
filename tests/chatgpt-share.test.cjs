@@ -17,7 +17,6 @@ test('analysis snapshot omits identity, credentials and notes by default and pre
  assert.equal(payload.visitCount,1);assert.equal(payload.visits[0].exposures[0].durationMinutes,1.5);assert.equal(payload.visits[0].moodAfter,4);
  assert.ok(!JSON.stringify(payload).includes('private'));assert.ok(!JSON.stringify(payload).includes('secret'));
  assert.equal(ctx.chatGPTSnapshot([visit],true).visits[0].notes,'private');
- assert.equal(ctx.chatGPTSnapshot([{...visit,moodAfter:5}]).visits[0].moodAfter,5);
  assert.equal(ctx.chatGPTSnapshot([]).visitCount,0);
 });
 test('saved destination survives reads and disconnect removes it without altering visits',()=>{

@@ -17,12 +17,12 @@ Set the next matching `loyly-journal-shell-vN` revision in sw.js. Run:
 
 ```sh
 node scripts/release.mjs prepare --version N
-node --test tests/release.test.cjs tests/backup.test.cjs tests/chatgpt-share.test.cjs tests/visits-page.test.cjs tests/intentions.test.cjs
+node --test tests/release.test.cjs tests/backup.test.cjs tests/chatgpt-share.test.cjs tests/intentions.test.cjs tests/planning.test.cjs
 ```
 
 Preparation fetches GitHub main read-only and compares every runtime file against the reviewed baseline or last prepared release. Unknown upstream changes fail before source/output are changed. After reconciliation it derives dist from the canonical root files, writes the `olo-release` meta value, and records file hashes in `.openai/source-sync.json`. Static assets and icons are included. No journal or account data is read or changed.
 
-Run the browser suites in `.github/workflows/backup-tests.yml`, including `tests/design-parity.browser.test.cjs`. The new parity checks protect the cream icon-and-label navigation pill, regular mobile labels, sidebar wordmark/tagline, clean Read more/Read less copy, Georgia quote typography, and the intention navigation at 320/390/635/1280px.
+Run the browser suites in `.github/workflows/backup-tests.yml`, including `tests/design-parity.browser.test.cjs`. The new parity checks protect the cream icon-and-label navigation pill, regular mobile labels, sidebar wordmark/tagline, clean Read more/Read less copy, and Georgia quote typography at 320/635/1280px. Intention navigation is covered separately by its lifecycle browser tests.
 
 The final Sites source-helper packaging commands must include:
 

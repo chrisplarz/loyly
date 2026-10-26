@@ -95,16 +95,6 @@ test('storage failures roll back welcome preference; launch intro preserves unfi
  assert.deepEqual(await stored(page),before);assert.equal(await page.evaluate(()=>draft.id),'in-progress');
  await page.evaluate(()=>{draft=null;playWelcome()});await page.locator('.welcome-intro:not(.loading)').waitFor();assert.equal(await page.locator('.welcome-intro').count(),1);
 });
-test('mobile and desktop keep content within viewport and hero geometry intact',async t=>{
- for(const width of [360,390,1280]){
-  const page=await setup(t,{width,media:false});await page.evaluate(()=>nav('profile'));
-  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  await page.evaluate(()=>{nav('home');document.getElementById('page-home').getAnimations().forEach(a=>a.finish())});const before=await page.locator('.hero').boundingBox();
-  await page.evaluate(()=>{db.profile.appearance={background:'botanical'};applyAppearance()});assert.deepEqual(await page.locator('.hero').boundingBox(),before);
-  if(width===390){await page.screenshot({path:'/tmp/loyly-botanical-mobile.png',fullPage:true});}
- }
-});
-
 test('approved production artwork loads and crops cleanly on mobile and desktop',async t=>{
  assert.ok(fs.statSync(path.join(root,'assets/welcome-landscape.webp')).size<250000);
  for(const width of [390,1280]){
@@ -114,7 +104,7 @@ test('approved production artwork loads and crops cleanly on mobile and desktop'
   assert.equal(await page.locator('.welcome-scene').getAttribute('aria-hidden'),'true');
   // Inspect the hold phase while retaining the actual artwork and animation geometry.
   await page.locator('.welcome-intro').evaluate(el=>el.getAnimations({subtree:true}).forEach(a=>{a.pause();a.currentTime=2100}));
-  await page.screenshot({path:`/tmp/loyly-intro-${width}.png`});
+  if(process.env.OLO_APPEARANCE_SCREENSHOT)await page.screenshot({path:process.env.OLO_APPEARANCE_SCREENSHOT+'-'+width+'.png'});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   await page.clock.runFor(5000);assert.equal(await page.locator('.welcome-intro').count(),0);
   await page.reload();await page.locator('.welcome-intro:not(.loading)').waitFor();await page.getByRole('button',{name:'Skip',exact:true}).click();
