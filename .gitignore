@@ -1,1 +1,4 @@
 /supabase/.temp/
+
+# Local browser verification screenshots.
+/metric-*.png

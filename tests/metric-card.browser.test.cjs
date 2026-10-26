@@ -1,0 +1,24 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
+for(const width of [320,390,768,1280])test('metric typography, pointer and keyboard states at '+width,async t=>{
+ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});t.after(()=>browser.close());
+ const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'});
+ await page.route('**/*',r=>r.request().url()==='http://olo.test/'?r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'../index.html'),'utf8')}):r.abort());await page.goto('http://olo.test/');
+ const tiles=page.locator('.home-activity>.metric-card');assert.equal(await tiles.count(),3);
+ const expectedDefault=['rgb(223, 233, 223)','rgb(240, 223, 212)','rgb(217, 231, 232)'];
+ const expectedPress=['rgb(193, 212, 193)','rgb(227, 196, 176)','rgb(185, 211, 213)'];
+ for(let i=0;i<3;i++){
+  const tile=tiles.nth(i);await tile.scrollIntoViewIfNeeded();
+  const type=await tile.evaluate(e=>{const s=x=>getComputedStyle(e.querySelector(x)),n=s('.stat-number'),l=s('.stat-label'),u=s('.stat-unit');return {number:[n.fontFamily,n.fontWeight,n.fontSize,n.lineHeight,n.letterSpacing],label:[l.fontWeight,l.fontSize,l.lineHeight,l.letterSpacing,l.textTransform],unit:[u.fontSize,u.lineHeight,u.marginLeft],gap:s('.stat-values').gap,fit:e.scrollWidth<=e.clientWidth}});
+  assert.match(type.number[0],/Manrope/);assert.equal(type.number[1],'700');assert.ok(['27px','38px'].includes(type.number[2]));if(width<=680)assert.equal(type.number[2],'27px');if(width===1280)assert.equal(type.number[2],'38px');assert.equal(type.number[2],type.number[3]);assert.deepEqual(type.label,['700','10px','14px','1.6px','uppercase']);assert.deepEqual(type.unit,['11px','17.6px','0px']);assert.equal(type.gap,'5px');assert.equal(type.fit,true);
+  assert.equal(await tile.locator('.home-metric-heading>svg').count(),1);const alignment=await tile.evaluate(e=>{const h=e.querySelector('.home-metric-heading'),i=h.querySelector('svg').getBoundingClientRect(),l=h.querySelector('.stat-label').getBoundingClientRect();return {direction:getComputedStyle(h).flexDirection,centerDelta:Math.abs(i.y+i.height/2-l.y-l.height/2),leftDelta:Math.abs(i.x-l.x)}});assert.ok((alignment.direction==='row'?alignment.centerDelta:alignment.leftDelta)<0.5,JSON.stringify(alignment));const before=await tile.boundingBox(),normal=await tile.evaluate(e=>getComputedStyle(e).backgroundColor);assert.equal(normal,expectedDefault[i]);await tile.hover();assert.equal(await tile.evaluate(e=>getComputedStyle(e).boxShadow),expectedPress[i]+' 0px 0px 0px 1px inset');assert.equal(await tile.evaluate(e=>getComputedStyle(e).backgroundColor),normal);assert.deepEqual(await tile.boundingBox(),before);
+  await page.mouse.down();assert.equal(await tile.evaluate(e=>getComputedStyle(e).backgroundColor),expectedPress[i]);assert.equal(await tile.evaluate(e=>getComputedStyle(e).boxShadow),'none');await page.mouse.move(0,0);await page.mouse.up();
+  await tile.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');assert.equal(await tile.evaluate(e=>e.matches(':focus-visible')),true);assert.equal(await tile.evaluate(e=>getComputedStyle(e).outlineStyle),'solid');
+  await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>view),'insights');assert.equal(await page.evaluate(()=>insightPeriod),'week');await page.evaluate(()=>nav('home'));
+ }
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ if([390,1280].includes(width))await page.locator('.home-week').screenshot({path:path.join(__dirname,'../metric-'+width+'.png')});
+});
+test('touch press has a darker fill without sticky hover',async t=>{
+ const browser=await chromium.launch({headless:true});t.after(()=>browser.close());const page=await browser.newPage({viewport:{width:390,height:900},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ await page.route('**/*',r=>r.request().url()==='http://olo.test/'?r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'../index.html'),'utf8')}):r.abort());await page.goto('http://olo.test/');const tile=page.locator('.home-goal');await tile.scrollIntoViewIfNeeded();const b=await tile.boundingBox(),cdp=await page.context().newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:b.x+b.width/2,y:b.y+b.height/2}]});assert.equal(await tile.evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(193, 212, 193)');assert.equal(await tile.evaluate(e=>getComputedStyle(e).boxShadow),'none');await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});assert.equal(await tile.evaluate(e=>e.classList.contains('is-pressed')),false);assert.equal(await tile.evaluate(e=>getComputedStyle(e).boxShadow),'none');
+});
