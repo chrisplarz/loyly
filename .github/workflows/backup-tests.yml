@@ -18,6 +18,8 @@ jobs:
       - run: node --test tests/release.test.cjs tests/backup.test.cjs tests/chatgpt-share.test.cjs tests/visits-page.test.cjs tests/intentions.test.cjs tests/planning.test.cjs
       - run: npm install --no-save --package-lock=false playwright@1.56.1
       - run: npx playwright install --with-deps chromium
+      - run: node tests/accounts.browser.test.cjs
+      - run: node tests/planning.browser.test.cjs
       - run: node tests/backup.browser.test.cjs
       - run: node tests/appearance.browser.test.cjs
       - run: node tests/reflection.browser.test.cjs
@@ -26,5 +28,4 @@ jobs:
       - run: node tests/home-refinements.browser.test.cjs
       - run: node tests/intentions.browser.test.cjs
       - run: node tests/design-parity.browser.test.cjs
-      - run: node tests/planning.browser.test.cjs
       - run: node tests/section-jump-nav.browser.test.cjs

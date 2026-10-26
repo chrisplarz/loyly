@@ -1,7 +1,7 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
-const script=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('const KEY='));
+const script=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('const CLOUDKEY='));
 function boot(seed=new Map(),initialFailure=false){
  const storage=new Map(seed),nodes=new Map();let fail=initialFailure,n=0;
  const el=id=>{if(id==='weatherControl')return null;if(!nodes.has(id))nodes.set(id,{id,innerHTML:'',textContent:'',value:'',hidden:true,dataset:{},style:{setProperty(){}},classList:{toggle(){},add(){},remove(){}},setAttribute(){},focus(){},showModal(){this.open=true},close(){this.open=false},querySelectorAll:()=>[]});return nodes.get(id)};
