@@ -14,7 +14,7 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  assert.equal(await page.locator('.reflection-heading time').count(),0);
  assert.equal(await page.locator('.reflection-hint').textContent(),'Read more');
  assert.equal(await page.locator('.daily-reflection').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 254, 250)');
- assert.deepEqual(await page.locator('#page-home .home-activity .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(3).fill(['none','rgb(37, 74, 67)']));
+ assert.deepEqual(await page.locator('#page-home .home-activity .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(3).fill(['uppercase','rgb(37, 74, 67)']));
  assert.equal(await header.getAttribute('aria-expanded'),'false');
  const headline=await page.locator('.reflection-title').textContent();
  assert.equal(await page.locator('#reflection-body').isVisible(),false);

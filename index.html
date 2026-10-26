@@ -85,7 +85,7 @@ html.welcome-pending .app,html.welcome-pending .bottom-nav{visibility:hidden}
 .sidebar .brand-sub{border-top:1px solid var(--pine);padding-top:8px;margin-top:8px}.welcome-wordmark strong{display:block;line-height:1.1}.welcome-wordmark p{width:max-content;max-width:100%;margin:6px auto 0;border-top:1px solid var(--pine);padding-top:6px;line-height:1.4}
 #pageEyebrow{white-space:nowrap;max-width:none;flex-shrink:0}.topline{flex-wrap:wrap}
 
-.metric-link{appearance:none;-webkit-appearance:none;width:100%;font:inherit;text-align:left;color:var(--ink);cursor:pointer;transition:border-color .15s,box-shadow .15s}.metric-link .stat-label,.metric-link .stat-values,.metric-link .stat-bottom{display:block}.metric-link:hover{border-color:var(--pine2);box-shadow:0 3px 15px #19383212}.metric-link:focus-visible{outline:3px solid var(--pine);outline-offset:4px}#visitLog{scroll-margin-top:24px}#visitLogTitle:focus-visible{outline:2px solid var(--pine);outline-offset:5px;border-radius:3px}#page-home .week-grid .day{color:var(--pine2);font-weight:600}#page-home .day-bubble{color:var(--pine2);border-color:#b9cbbf;background:#eff4ee}#page-home .day-bubble.done{background:var(--pine2);border-color:var(--pine2);color:white}#page-home .split .progress-fill{background:var(--pine2)}#page-home .split .pill{background:#dfebe2;color:var(--pine)}.reflection-topic{font:700 10px 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pine2)}.reflection-attribution,.reflection-context,.reflection-source{font:400 11px/1.6 'DM Sans',sans-serif;color:#52695c}.reflection-heading .reflection-attribution{margin-top:-5px}.reflection-source a{color:var(--pine2);text-underline-offset:3px}.reflection-source a:focus-visible,.reflection-body .text-btn:focus-visible{outline:2px solid var(--pine);outline-offset:4px}.reflection-body .text-btn{min-height:44px;padding:8px 0}.reflection-context{margin-bottom:10px}
+.metric-link{appearance:none;-webkit-appearance:none;width:100%;font:inherit;text-align:left;color:var(--ink);cursor:pointer;transition:border-color .15s,box-shadow .15s}.metric-link .stat-label,.metric-link .stat-values,.metric-link .stat-bottom{display:block}.metric-link:focus-visible{outline:3px solid var(--pine);outline-offset:4px}#visitLog{scroll-margin-top:24px}#visitLogTitle:focus-visible{outline:2px solid var(--pine);outline-offset:5px;border-radius:3px}#page-home .week-grid .day{color:var(--pine2);font-weight:600}#page-home .day-bubble{color:var(--pine2);border-color:#b9cbbf;background:#eff4ee}#page-home .day-bubble.done{background:var(--pine2);border-color:var(--pine2);color:white}#page-home .split .progress-fill{background:var(--pine2)}#page-home .split .pill{background:#dfebe2;color:var(--pine)}.reflection-topic{font:700 10px 'DM Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--pine2)}.reflection-attribution,.reflection-context,.reflection-source{font:400 11px/1.6 'DM Sans',sans-serif;color:#52695c}.reflection-heading .reflection-attribution{margin-top:-5px}.reflection-source a{color:var(--pine2);text-underline-offset:3px}.reflection-source a:focus-visible,.reflection-body .text-btn:focus-visible{outline:2px solid var(--pine);outline-offset:4px}.reflection-body .text-btn{min-height:44px;padding:8px 0}.reflection-context{margin-bottom:10px}
 .timer-panel>.timer-info-button{position:absolute;top:12px;right:12px;width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer;z-index:2}.timer-info-button span{display:grid;place-items:center;width:23px;height:23px;border:1px solid currentColor;border-radius:50%;font:600 15px Georgia,serif}.timer-info-button:focus-visible{outline:2px solid currentColor;outline-offset:2px}.timer-info-dialog{width:min(540px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--line);border-radius:var(--radius);padding:24px;background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}.timer-info-dialog::backdrop{background:#19383266}.timer-info-dialog .session-info{margin:0;padding:0;background:transparent}.timer-info-dialog .icon-btn{min-width:44px;min-height:44px;font-size:26px}.timer-info-dialog :focus-visible{outline:2px solid var(--pine);outline-offset:3px}.visit-log-header .btn{margin-left:auto;flex-shrink:0}.visit-collection-footer{margin-top:18px;text-align:center}.visit-collection-footer .text-btn{min-height:44px;padding:10px 16px;text-decoration:underline;text-underline-offset:3px}.visit-collection-footer .text-btn:focus-visible{outline:2px solid var(--pine);outline-offset:3px}.goal-number .goal-denominator{display:inline-flex;gap:6px;letter-spacing:normal;line-height:1;margin-left:8px;white-space:nowrap;font-size:14px}
 @media(prefers-reduced-motion:reduce){.metric-link,.bottom-nav-content{transition:none}}
 
@@ -130,8 +130,8 @@ html.welcome-pending .app,html.welcome-pending .bottom-nav{visibility:hidden}
 .stats>.metric-card .stat-unit,.modal .stats>.metric-card .stat-unit{display:inline-block;margin:0;font:400 11px/17.6px 'DM Sans',sans-serif;letter-spacing:normal;color:var(--muted)}
 .stats>.metric-card .stat-bottom{margin:0;font:400 11px/17.6px 'DM Sans',sans-serif;color:var(--muted);overflow-wrap:anywhere}
 .metric-card.metric-link{transition:background-color .15s,box-shadow .15s}
-@media(hover:hover) and (min-width:681px){.stats>.metric-card.metric-link:hover{box-shadow:inset 0 0 0 1px var(--metric-press)}}
-#page-home .stats>.metric-card.metric-link:active{background:var(--metric-press);box-shadow:none}
+@media(hover:hover) and (pointer:fine){.metric-card.metric-link:hover{box-shadow:inset 0 0 0 1px var(--metric-press)}}
+.metric-card.metric-link:active,.metric-card.metric-link.is-pressed{background:var(--metric-press);box-shadow:none}
 @media(max-width:680px){.stats>.card.metric-card,.modal .stats>.card.metric-card{padding:17px;border-radius:17px}.stats>.metric-card .stat-number,.modal .stats>.metric-card .stat-number{font-size:27px;line-height:27px;letter-spacing:-1.35px}}
 @media(prefers-reduced-motion:reduce){.metric-card.metric-link{transition:none}}
 /* Figma Button 3:441: keyboard rings do not shift adjacent controls. */
@@ -185,15 +185,15 @@ html.welcome-pending .app,html.welcome-pending .bottom-nav{visibility:hidden}
 .home-activity>.metric-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;border:0;border-radius:var(--radius);padding:24px;gap:28px;min-height:174px;min-width:0;text-align:left;background:var(--metric-bg);box-shadow:none}
 .home-metric-heading{display:flex;align-items:flex-start;gap:10px;min-height:28px;width:100%}
 .home-metric-heading>svg{width:20px;height:20px;flex-shrink:0;color:var(--pine2)}
-.home-activity .stat-label{font:500 14px/1.5 'DM Sans',sans-serif;color:var(--pine2);letter-spacing:0;text-transform:none;margin:0;min-height:0;overflow-wrap:break-word}
-.home-activity .stat-number{font:600 clamp(27px,6cqw,44px)/1.1 Manrope,sans-serif;letter-spacing:-.05em;overflow-wrap:anywhere;min-width:0}
-.home-activity .stat-unit{font-size:14px;color:var(--pine2);margin-left:6px;white-space:nowrap}
-.home-activity .stat-values{display:flex;align-items:baseline;gap:0;flex-wrap:wrap;max-width:100%}
-.home-activity .metric-link:active{background:var(--metric-press)}
+.home-activity .stat-label{font:700 10px/14px 'DM Sans',sans-serif;color:var(--pine2);letter-spacing:1.6px;text-transform:uppercase;margin:0;min-height:28px;overflow-wrap:break-word}
+.home-activity .stat-number{font:700 38px/38px Manrope,sans-serif;letter-spacing:-1.9px;color:var(--ink);overflow-wrap:anywhere;min-width:0}
+.home-activity .stat-unit{font:400 11px/17.6px 'DM Sans',sans-serif;letter-spacing:normal;color:var(--muted);margin:0;white-space:nowrap}
+.home-activity .stat-values{display:flex;align-items:flex-end;gap:5px;flex-wrap:wrap;max-width:100%}
+
 .home-activity .metric-link:focus-visible{outline:2px solid var(--pine);outline-offset:3px}
 .home-thought{margin-top:24px}.home-thought>.daily-reflection{max-width:none}.home-planned{margin-top:20px}.home-plan-row{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.home-plan-row p{margin:5px 0 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.planner-modal .fields-2{align-items:start}.plan-zone-summary{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 10px;color:var(--muted);font-size:11px;line-height:1.5}.plan-zone-summary .text-btn{padding:2px 0;font-size:11px;text-decoration:underline}.plan-zone-summary .text-btn:focus-visible{outline:2px solid var(--pine);outline-offset:2px}.plan-zone-summary>span{min-width:0;overflow-wrap:anywhere}.planner-error{color:var(--button-danger);font-size:13px;line-height:1.6}.planner-modal input,.planner-modal select,.planner-modal textarea{font-size:16px}.planner-modal .actions{gap:10px}.planner-modal>.actions:empty{display:none}.planner-modal .input-help{line-height:1.6}.planner-modal [hidden]{display:none}.modal [data-day-list]{display:grid;gap:10px}
-@container(max-width:560px){.home-activity{gap:10px}.home-activity>.metric-card{padding:16px 12px;min-height:150px;border-radius:17px;gap:24px}.home-metric-heading{flex-direction:column;gap:8px}.home-activity .stat-label{font-size:12px}.home-activity .stat-unit{font-size:12px;margin-left:4px}.week-day{font-size:12px;min-height:80px;gap:12px}.home-week-divider{margin:20px 0}}
-@media(max-width:680px){.home-week.card{padding:24px 16px}.home-week>.section-head>.small{font-size:11px}.home-week-description{font-size:13px;margin-bottom:24px}.planner-modal .fields-2{grid-template-columns:1fr 1fr}}
+@container(max-width:560px){.home-activity{gap:10px}.home-activity>.metric-card{padding:16px 12px;min-height:150px;border-radius:17px;gap:24px}.home-metric-heading{flex-direction:column;gap:8px}.home-activity .stat-number{font-size:27px;line-height:27px;letter-spacing:-1.35px}.week-day{font-size:12px;min-height:80px;gap:12px}.home-week-divider{margin:20px 0}}
+@media(max-width:680px){.home-activity .stat-number{font-size:27px;line-height:27px;letter-spacing:-1.35px}.home-week.card{padding:24px 16px}.home-week>.section-head>.small{font-size:11px}.home-week-description{font-size:13px;margin-bottom:24px}.planner-modal .fields-2{grid-template-columns:1fr 1fr}}
 @media(forced-colors:active){.week-day.is-today .day-circle{outline-color:Highlight}.week-day.visited .day-circle{background:Highlight;color:HighlightText;forced-color-adjust:none}}
 
 #calendarFeedback:not(:empty){position:fixed;z-index:70;bottom:85px;right:20px;width:min(420px,calc(100% - 40px));padding:20px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}#calendarFeedback p{font-size:13px;line-height:1.6;margin:8px 0 14px}#calendarFeedback .actions{gap:12px}#calendarFeedback .btn{font-size:12px}
@@ -237,7 +237,7 @@ html.welcome-pending .app,html.welcome-pending .bottom-nav{visibility:hidden}
 try{const saved=JSON.parse(localStorage.getItem('loyly-journal-v1')||'null');
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&saved?.profile?.appearance?.dailyIntro!==false&&!document.hidden){document.documentElement.classList.add('welcome-pending');setTimeout(()=>document.documentElement.classList.remove('welcome-pending'),2000)}}catch(e){}
 </script>
-<meta name="olo-release" content="51">
+<meta name="olo-release" content="52">
 </head>
 <body>
 <div class="app">
@@ -1374,6 +1374,19 @@ async function searchWeatherCity(){const input=document.getElementById('weatherC
 function useWeatherCity(){const selected=weatherResults[Number(document.getElementById('weatherCityChoice')?.value)];if(!validWeatherLocation(selected))return;weatherLocation=selected;weatherState=null;weatherAttempt=0;try{localStorage.setItem(WEATHER_LOCATION_KEY,JSON.stringify(selected))}catch(e){toast('City selected for this session; browser storage is unavailable.')}closeModal();renderWeather();refreshWeather(true)}
 function clearWeatherLocation(){weatherSearchVersion++;weatherLocation=null;weatherState=null;weatherAttempt=0;try{localStorage.removeItem(WEATHER_LOCATION_KEY)}catch(e){}closeModal();renderWeather()}
 setInterval(()=>{if(!document.hidden)refreshWeather()},15*60000);
+
+// Match the Metric Card press state immediately on touch; clear it on scroll/cancel.
+let pressedMetric=null;
+function clearMetricPress(){pressedMetric?.classList.remove('is-pressed');pressedMetric=null}
+document.addEventListener('pointerdown',event=>{
+ if(!event.isPrimary||event.button!==0)return;
+ clearMetricPress();const tile=event.target.closest?.('.metric-card.metric-link');
+ if(tile&&!tile.disabled){pressedMetric=tile;tile.classList.add('is-pressed')}
+});
+for(const type of ['pointerup','pointercancel','scroll'])document.addEventListener(type,clearMetricPress,{capture:true,passive:true});
+document.addEventListener('pointerout',event=>{if(pressedMetric&&!pressedMetric.contains(event.relatedTarget))clearMetricPress()});
+window.addEventListener('blur',clearMetricPress);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)clearMetricPress()});
 
 migrateIntentionDraft();
 restoreManualDraft();navRender();nav('home');playWelcome();refreshWeather();initializeAccount();setInterval(()=>{if(view==='journal'&&sessionTab==='timer'&&draft?.current){let clock=document.getElementById('liveClock'),label=document.getElementById('currentIntervalLabel');if(clock)clock.textContent=fmtTime(currentElapsed());if(label)label.textContent=fmtM(currentElapsed())}},500);
