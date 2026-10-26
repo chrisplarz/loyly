@@ -14,7 +14,7 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  assert.equal(await page.locator('.reflection-heading time').count(),0);
  assert.equal(await page.locator('.reflection-hint').textContent(),'Read more');
  assert.equal(await page.locator('.daily-reflection').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 254, 250)');
- assert.deepEqual(await page.locator('#page-home .home-activity .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(2).fill(['none','rgb(37, 74, 67)']));
+ assert.deepEqual(await page.locator('#page-home .home-activity .stat-label').evaluateAll(ns=>ns.map(n=>[getComputedStyle(n).textTransform,getComputedStyle(n).color])),Array(3).fill(['none','rgb(37, 74, 67)']));
  assert.equal(await header.getAttribute('aria-expanded'),'false');
  const headline=await page.locator('.reflection-title').textContent();
  assert.equal(await page.locator('#reflection-body').isVisible(),false);
@@ -41,10 +41,10 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  await page.clock.setSystemTime(new Date(2026,9,18,12));
  await page.evaluate(()=>renderHome());
  assert.deepEqual(await page.locator('.week-grid .day-circle').allTextContents(),['18','19','20','21','22','23','24']);
- assert.equal(await page.locator('.home-goal .goal-copy strong').textContent(),'0 of 3 days');
+ assert.equal(await page.locator('.home-goal .stat-number').textContent(),'0');
  await page.evaluate(()=>{db.visits=[{id:'previous-week',date:'2026-10-17',intervals:[]},{id:'new-week',date:'2026-10-18',intervals:[]}];renderHome()});
- assert.equal(await page.locator('.home-goal .goal-copy strong').textContent(),'1 of 3 days');
- assert.equal(await page.locator('.goal-segment.filled').count(),1);
+ assert.equal(await page.locator('.home-goal .stat-number').textContent(),'1');
+ assert.equal(await page.locator('.goal-segment').count(),0);
  const lengths=await page.evaluate(()=>DAILY_REFLECTIONS.map(r=>[r.headline.split(/\s+/).length,r.body.split(/\s+/).length]));
  assert.equal(lengths.length,30);for(const [h,b] of lengths){assert.ok(h>=5&&h<=10);assert.ok(b>=50&&b<=80,`body: ${b}`)}
  await page.evaluate(()=>{beginLive();startInterval('sauna')});
