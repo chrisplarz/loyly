@@ -3,19 +3,20 @@
   "github": {
     "remote": "https://github.com/chrisplarz/loyly.git",
     "branch": "main",
-    "commit": "c90bad809828f50b6b03b170627f163a746854ad",
+    "commit": "6c90955480708aceb02065a0abc17e2a5cf50160",
     "files": {
       "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
       "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
+      "assets/olo-activity-prototype.html": "6520f0274ebd034e05f832feeae395fad4a4247d51ddff153553bcf329d10a96",
       "assets/olo-notes-logo-ui.svg": "b67ef6563e35112dda67fbdcb094fc37518c01c47263f90e9c383117cc97d304",
       "assets/olo-notes-logo.svg": "18525245edda1917281b042d570b55f11e6070c8a6a3fd71fd2acf6e1ca0df0b",
       "assets/paper.svg": "6abfe7f03019dcdd97656d5d245497a859cb9763a6607806e00350d3a21116a4",
       "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
       "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
       "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
-      "index.html": "78b6d901729fa1c3a0fd93f47737b64d952bdc375f38c122fd589502e4b3efe1",
+      "index.html": "646475120b14011d040b2190868e369ff66c38acc165206eb201b4aa1ed0a21e",
       "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
-      "sw.js": "d5be3b505f13f560affa6e5aec79752ff16f034295f075b10138f9c9f1fd9d88"
+      "sw.js": "906b50af4f4e2e8d8ea80fb1e424e92b858a11237791fd131352e9b804c60b69"
     }
   },
   "design": {
@@ -49,13 +50,27 @@
       "6:116"
     ],
     "quoteFontInApp": "Georgia",
-    "reviewed": "2026-10-26"
+    "reviewed": "2026-10-26",
+    "moodReference": {
+      "fileKey": "2xNboef6xqT9T3EHYEyNQm",
+      "nodes": [
+        "69:1401",
+        "10:8155"
+      ],
+      "supportingLibraryFileKey": "ZFaJvHXzlUXyopMzk3kZm3",
+      "reviewed": "2026-10-26"
+    }
   },
   "prepared": {
-    "version": 53,
+    "version": 54,
     "files": {
       "assets/botanical.svg": "0e1c981f5206233bd0dd557116525400af27f11b1461de30dac6be2bb0812469",
       "assets/contours.svg": "15e835c4a78f0a490bc42d8ae951a50397f702bf9f265772cfbf5b1320f73415",
+      "assets/mood-1.svg": "47d383b7b80833905f02d9ec732b56042f7020a8f9aeacb44e91f5a682d2ee23",
+      "assets/mood-2.svg": "60dd90d0f625e4faa3702e18cb7b4903f7a616c091c31102840a944dbd6a09fd",
+      "assets/mood-3.svg": "2587afe474b70f0423e67e9c20a060781a6d0966ad7684c608378cabd8a73c41",
+      "assets/mood-4.svg": "97c4927b60099719a84ae3b0ad6df386cf7d7d3f4865f9957ff49f123fad08c8",
+      "assets/mood-5.svg": "6926c81f2f7dfa29766c171f1d1e0b87d331d75ea27c26232479c88971c040ec",
       "assets/olo-activity-prototype.html": "6520f0274ebd034e05f832feeae395fad4a4247d51ddff153553bcf329d10a96",
       "assets/olo-notes-logo-ui.svg": "b67ef6563e35112dda67fbdcb094fc37518c01c47263f90e9c383117cc97d304",
       "assets/olo-notes-logo.svg": "18525245edda1917281b042d570b55f11e6070c8a6a3fd71fd2acf6e1ca0df0b",
@@ -63,9 +78,9 @@
       "assets/welcome-landscape.webp": "ef4edddaf93ad78b673bc3d377ed6dfdf66b5c2a30bdef967de4e6e41f0ef7b7",
       "icons/icon-192.png": "f89fba16440f02158adaa7ac1326744ba87838c2955a905af41c5ef0b782991a",
       "icons/icon-512.png": "0402c442aab7b2f15fa4b54e83fdfb21afd95f9d6f47d1290288a6116693836c",
-      "index.html": "646475120b14011d040b2190868e369ff66c38acc165206eb201b4aa1ed0a21e",
+      "index.html": "d664fb1893ecdd966f9c09d0fef857ce360238fed3499e3f18dda9acf062d3af",
       "manifest.webmanifest": "3e8ba8756f557b560a9676c372949bbb82c25428fdc8e12212186eb17f4e9856",
-      "sw.js": "906b50af4f4e2e8d8ea80fb1e424e92b858a11237791fd131352e9b804c60b69"
+      "sw.js": "406e6f38aa7f209de45f79410c45484961e5eebd7046182e02020895ae31b0a7"
     }
   }
 }
