@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
 const storage=new Map();
-const ctx=vm.createContext({URL,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{getElementById:()=>null},esc:s=>String(s),toast:()=>{}});
+const ctx=vm.createContext({URL,ownerKey:k=>k,localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},document:{getElementById:()=>null},esc:s=>String(s),toast:()=>{}});
 vm.runInContext(html.split('// BEGIN CHATGPT SHARE')[1].split('// END CHATGPT SHARE')[0],ctx);
 test('only exact ChatGPT project destinations accepted; tracking and fragments removed',()=>{
  assert.equal(ctx.chatGPTProjectURL('https://chatgpt.com/g/g-p-abc/wrong'),null);

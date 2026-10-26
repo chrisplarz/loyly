@@ -4,7 +4,7 @@ for(const width of [320,390,768,1280])for(const reducedMotion of ['reduce','no-p
  const browser=await chromium.launch({headless:true});t.after(()=>browser.close());const page=await browser.newPage({viewport:{width,height:850},reducedMotion}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>r.request().url()==='http://jump.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());
  await page.addInitScript(()=>localStorage.setItem('loyly-journal-v1',JSON.stringify({profile:{goal:3,appearance:{dailyIntro:false}},visits:[]})));
- await page.goto('http://jump.test/');await page.evaluate(()=>nav('profile'));const nav=page.getByRole('navigation',{name:'Settings sections'}),buttons=nav.getByRole('button');assert.equal(await buttons.count(),6);
+ await page.goto('http://jump.test/');await page.evaluate(()=>nav('profile'));const nav=page.getByRole('navigation',{name:'Settings sections'}),buttons=nav.getByRole('button');assert.equal(await buttons.count(),5);
  assert.equal(await buttons.allTextContents().then(x=>x.join('').trim()),'');
  const before=await page.evaluate(()=>localStorage.getItem('loyly-journal-v1'));
  for(const name of ['Calendar preferences','Appearance','Your data belongs to you','Profile']){

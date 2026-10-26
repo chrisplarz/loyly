@@ -57,3 +57,20 @@ for(const width of [390,1280])test(`daily reflection and session regression at $
  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error('quota')};reflectionMemory=null;reflectionProvider.getDaily(new Date(2030,0,1))});
  assert.deepEqual(errors,[]);
 });
+
+for(const width of [320,390,1280])test(`thought link shares the arrow toggle, follows the source, and preserves keyboard focus at ${width}px`,async t=>{
+ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});t.after(()=>browser.close());
+ const page=await browser.newPage({viewport:{width,height:1000},reducedMotion:width===390?'no-preference':'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));t.after(()=>assert.deepEqual(errors,[]));
+ await page.route('**/*',r=>r.request().url()==='http://thought-toggle.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());
+ await page.addInitScript(()=>localStorage.setItem('loyly-journal-v1',JSON.stringify({profile:{goal:3,appearance:{dailyIntro:false}},visits:[]})));
+ await page.goto('http://thought-toggle.test/');const before=await page.evaluate(()=>localStorage.getItem('loyly-journal-v1'));
+ const heading=page.getByRole('button',{name:'Today’s Thought',exact:true}),toggle=page.locator('.reflection-hint');
+ assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert.equal(await toggle.evaluate(e=>e.closest('.reflection-heading')!==null),true);assert.ok((await toggle.boundingBox()).height>=44);
+ await toggle.click();assert.equal(await heading.getAttribute('aria-expanded'),'true');assert.equal(await toggle.textContent(),'Read less');assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+ assert.equal(await toggle.evaluate(e=>e.closest('#reflection-body')!==null),true);assert.equal(await toggle.evaluate(e=>Boolean(e.previousElementSibling?.matches('.reflection-source'))),true);
+ assert.equal(await page.locator('.reflection-source a').getAttribute('target'),'_blank');assert.equal(await toggle.evaluate(e=>e===document.activeElement),true);assert.equal(await page.locator('#reflection-body').evaluate(e=>e.inert),false);
+ await toggle.press('Space');assert.equal(await heading.getAttribute('aria-expanded'),'false');assert.equal(await toggle.textContent(),'Read more');assert.equal(await toggle.evaluate(e=>e.closest('.reflection-heading')!==null&&e===document.activeElement),true);assert.equal(await page.locator('#reflection-body').evaluate(e=>e.inert),true);
+ await heading.click();assert.equal(await toggle.textContent(),'Read less');assert.equal(await page.locator('.reflection-hint').count(),1);await toggle.focus();await toggle.press('Enter');assert.equal(await heading.getAttribute('aria-expanded'),'false');
+ for(const topic of ['ai','zen']){await page.evaluate(topic=>{db.profile.thoughtTopic=topic;renderHome()},topic);await page.getByRole('button',{name:'Read more',exact:true}).click();assert.equal(await page.locator('.reflection-source').count(),0);assert.equal(await page.locator('.reflection-body>div>.reflection-hint:last-child').count(),1);await page.getByRole('button',{name:'Read less',exact:true}).click()}
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);assert.equal(await page.evaluate(()=>localStorage.getItem('loyly-journal-v1')),before);assert.deepEqual(errors,[]);
+});
