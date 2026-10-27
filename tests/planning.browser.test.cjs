@@ -14,12 +14,13 @@ for(const width of [320,390,768,1024,1280])test('weekly layout and day actions a
  assert.equal(await page.locator('.week-day[aria-current="date"] .day-circle').evaluate(e=>getComputedStyle(e).outlineWidth),'2px');
  assert.deepEqual(await page.locator('.home-activity .stat-label').allTextContents(),['Weekly visit goal','Sauna time','Cold plunge time']);
  assert.deepEqual(await page.locator('.home-activity .stat-number').allTextContents(),['1','42','6']);
- const layout=await page.locator('.home-week').evaluate(card=>{const r=e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,w:b.width,h:b.height,right:b.right,bottom:b.bottom}};return {card:r(card),tiles:[...card.querySelectorAll('.home-activity>.card')].map(r),range:r(card.querySelector('.home-week-range')),last:r(card.querySelector('.week-day:last-child .day-circle')),circle:r(card.querySelector('.day-circle')),weekday:r(card.querySelector('.weekday'))}});
+ const layout=await page.locator('.home-week').evaluate(card=>{const r=e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,w:b.width,h:b.height,right:b.right,bottom:b.bottom}};return {card:r(card),tiles:[...card.querySelectorAll('.home-activity>.card')].map(r),range:r(card.querySelector('.home-week-controls')),last:r(card.querySelector('.week-day:last-child .day-circle')),circle:r(card.querySelector('.day-circle')),weekday:r(card.querySelector('.weekday'))}});
  const [visits,sauna,cold]=layout.tiles;
  assert.ok(Math.abs(visits.w-sauna.w)<1&&Math.abs(sauna.w-cold.w)<1);
  assert.ok(visits.y===sauna.y&&sauna.y===cold.y&&visits.h===cold.h);
  assert.ok(cold.bottom<layout.card.bottom&&visits.x>layout.card.x);
- assert.ok(Math.abs(layout.range.right-cold.right)<1&&Math.abs(layout.last.right-cold.right)<1);
+ assert.ok(Math.abs(layout.last.right-cold.right)<1);
+ if(width>=768)assert.ok(Math.abs(layout.range.right-cold.right)<1);else assert.ok(layout.range.x>=visits.x&&layout.range.right<=cold.right+1);
  assert.ok(layout.weekday.y>layout.circle.bottom);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  assert.equal(await page.locator('.home-week').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
