@@ -31,3 +31,5 @@ jobs:
       - run: node tests/section-jump-nav.browser.test.cjs
       - run: node tests/metric-card.browser.test.cjs
       - run: node tests/mood.browser.test.cjs
+      - run: node tests/fort-union.browser.test.cjs
+      - run: node tests/visit-polish.browser.test.cjs
