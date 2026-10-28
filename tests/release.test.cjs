@@ -25,3 +25,11 @@ test('changing both source and output after preparation cannot bypass fingerprin
 test('new upstream drift at publication and inconsistent release versions both fail',async t=>{
  const {root,a,upstream}=await fixture(t);assert.throws(()=>a.prepareRelease(root,34,{upstream}),/matching service-worker/);a.prepareRelease(root,33,{upstream});assert.throws(()=>a.verifyRelease(root,{upstream:{commit:'racing-edit',files:{...upstream.files,'sw.js':'changed'}}}),/GitHub source drift/);
 });
+
+test('release configuration targets the renamed olo-notes main and rejects other repositories or branches',async()=>{
+ const a=await api,approved={remote:'https://github.com/chrisplarz/olo-notes.git',branch:'main'};
+ assert.doesNotThrow(()=>a.assertGitHubTarget(approved));
+ const configured=JSON.parse(fs.readFileSync(path.join(__dirname,'../.openai/source-sync.json'),'utf8')).github;
+ assert.deepEqual({remote:configured.remote,branch:configured.branch},approved);
+ for(const config of [{...approved,remote:'https://github.com/chrisplarz/loyly.git'},{...approved,remote:'https://github.com/other/olo-notes.git'},{...approved,branch:'unreviewed'}])assert.throws(()=>a.fetchGitHub(config),/Unexpected approved GitHub repository/);
+});

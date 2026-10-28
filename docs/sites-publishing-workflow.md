@@ -32,3 +32,11 @@ If a Sites release fails, restore the last known-good Sites version and retest t
 
 ## Repository note
 The current repository is a standalone HTML app (`index.html`, assets, manifest, service worker). It contains backup tests, but those tests do not validate a live Sites release or production Supabase records. Do not claim migration is complete without device checks.
+
+## Repository rename — olo-notes
+
+The canonical GitHub repository is `chrisplarz/olo-notes` and the approved remote is `https://github.com/chrisplarz/olo-notes.git`, branch `main`. Update existing checkout remotes with `git remote set-url origin https://github.com/chrisplarz/olo-notes.git`.
+
+Before the next Sites edit or publication, carry the reviewed repository rename changes from GitHub into the existing Sites checkout: `scripts/release.mjs` and `.openai/source-sync.json`, plus the release tests and these instructions. Preserve the checkout's runtime hashes and prepared release data when changing only its remote. Run the release tests and `node scripts/release.mjs check --online` after reconciliation. Do not rely on the old repository URL redirect or overwrite current Sites runtime files.
+
+Existing `loyly-*` storage and backup identifiers, service-worker cache prefixes, and the `loyly_journals` database table are compatibility identifiers; retain them. This repository rename requires no runtime release, database migration, or Figma changes.
