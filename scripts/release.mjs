@@ -14,9 +14,12 @@ function walk(root,prefix=''){
 export function runtimeFiles(root){const names=['index.html','sw.js','manifest.webmanifest',...['assets','icons'].flatMap(dir=>walk(path.join(root,dir),dir+'/'))].sort();return Object.fromEntries(names.map(p=>[p,hash(readFileSync(path.join(root,p)))]))}
 function load(root){return JSON.parse(readFileSync(path.join(root,'.openai/source-sync.json'),'utf8'))}
 function outputPath(root){const dir=JSON.parse(readFileSync(path.join(root,'.openai/hosting.json'),'utf8')).static?.directory;if(dir!=='dist')throw Error('Expected the existing dist static output.');return path.join(root,dir)}
+export function assertGitHubTarget(config){
+ if(config.remote!=='https://github.com/chrisplarz/olo-notes.git'||config.branch!=='main')throw Error('Unexpected approved GitHub repository.');
+}
 export function fetchGitHub(config){
  // Read-only fetch, with no long-lived GitHub or Sites credential stored by this script.
- if(config.remote!=='https://github.com/chrisplarz/loyly.git'||config.branch!=='main')throw Error('Unexpected approved GitHub repository.');
+ assertGitHubTarget(config);
  const dir=mkdtempSync(path.join(tmpdir(),'olo-source-check-'));
  const env={...process.env};for(const key of Object.keys(env))if(key.startsWith('GIT_'))delete env[key];env.GIT_TERMINAL_PROMPT='0';
  const git=(...args)=>execFileSync('git',['-C',dir,...args],{env,maxBuffer:8*1024*1024,stdio:['ignore','pipe','pipe']});
