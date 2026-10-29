@@ -14,9 +14,12 @@ for(const width of [320,390,768,1280])test('Insights derives real metrics, filte
  for(const label of ['Felt better','Felt the same','Felt lower'])assert.match(await page.locator('.insight-row').filter({hasText:label}).innerText(),/1 visits/);
  await page.getByRole('button',{name:'My rituals',exact:true}).click();assert.match(await page.locator('.insight-row').filter({hasText:'Median recorded visit time'}).innerText(),/32 min/);assert.match(await page.locator('.insight-row').filter({hasText:'Median sauna round'}).innerText(),/25 min/);assert.match(await page.locator('.insight-row').filter({hasText:'Rest',exact:false}).first().innerText(),/20 min/);
  for(const area of ['My rhythm','How I feel','My rituals']){await page.getByRole('button',{name:area,exact:true}).click();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true)}
- await page.locator('#insightPeriod').selectOption('week');assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['1','30','4']);
- await page.locator('#insightPeriod').selectOption('year');assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['4','1099','10']);
+ await page.getByRole('button',{name:'Week',exact:true}).click();assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['1','30','4']);
+ await page.getByRole('button',{name:'Year',exact:true}).click();assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['4','1099','10']);
  await page.evaluate(()=>{insightWeekStart='2026-10-18';insightPeriod='week';insightArea='rhythm';renderInsights()});assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['1','30','2']);assert.match(await page.locator('#insightPanel').innerText(),/Selected week/);
+ await page.getByRole('button',{name:'Day',exact:true}).click();assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['1','30','4']);
+ await page.getByRole('button',{name:'Switch to original Insights',exact:true}).click();assert.equal(await page.getByRole('button',{name:'Switch to experimental Insights',exact:true}).count(),1);assert.match(await page.locator('#page-insights').innerText(),/How you felt/);assert.deepEqual(await page.locator('#page-insights .stat-number').allTextContents(),['1','30','4','+1.0']);
+ await page.getByRole('button',{name:'Months',exact:true}).click();await page.getByRole('button',{name:'Switch to experimental Insights',exact:true}).click();assert.equal(await page.locator('#insightPanel').count(),1);
  assert.equal(await page.evaluate(()=>JSON.stringify(db)),snapshot);
  await page.evaluate(()=>{db.visits=[];renderInsights()});for(const area of ['My rhythm','How I feel','My rituals']){await page.getByRole('button',{name:area,exact:true}).click();assert.doesNotMatch(await page.locator('#page-insights').innerText(),/NaN|Infinity/)}
  assert.deepEqual(errors,[]);
